@@ -6,6 +6,7 @@ Animation presets for React and Next.js, designed to be reliable for both humans
 
 - `/packages/animal` - `@vercel/animal` (core + React entry)
 - `/apps/docs` - Next.js docs site + interactive demos
+  - Agent manifest endpoint: `/manifest.json`
 
 ## Development
 
@@ -19,4 +20,3 @@ pnpm dev
 ```bash
 pnpm build
 ```
-
