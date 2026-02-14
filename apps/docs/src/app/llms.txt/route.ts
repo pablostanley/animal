@@ -89,9 +89,13 @@ export function GET() {
       - \`x-<px>\`, \`y-<px>\`, \`scale-<ratio>\`, \`rotate-<deg>\` (e.g. \`y--8\`, \`scale-1.03\`, \`rotate-45\`)
     - Stagger:
       - \`stagger-<ms>\` (e.g. \`stagger-80\`) — delay between siblings inside a Stagger wrapper
+    - Loop:
+      - \`loop\` — repeat animation infinitely
+      - \`loop-<count>\` — repeat animation N times (e.g. \`loop-3\`)
     - Scroll-triggered:
       - \`in-view\` — animate when element enters the viewport (once)
       - \`in-view-repeat\` — re-animate every time the element enters the viewport
+      - \`scroll-progress\` — link animation progress to scroll position (0-1)
     - Reduced motion:
       - \`rm-system\` | \`rm-always\` | \`rm-never\`
 
@@ -161,12 +165,52 @@ export function GET() {
     </A.div>
     \`\`\`
 
+    ### Loading spinner
+
+    \`\`\`tsx
+    <A.div an="enter:rotate-360 duration-1000 ease-linear loop">
+      <Spinner />
+    </A.div>
+    \`\`\`
+
+    ### Pulse indicator
+
+    \`\`\`tsx
+    <A.div an="enter:scale scale-1.2 duration-800 ease-in-out loop">
+      <Badge />
+    </A.div>
+    \`\`\`
+
+    ### Bouncy entrance
+
+    \`\`\`tsx
+    <A.div an="enter:bounce-in">
+      Hello!
+    </A.div>
+    \`\`\`
+
+    ### Scroll-linked parallax
+
+    \`\`\`tsx
+    <A.div an="enter:fade-up scroll-progress y-40">
+      Parallax content
+    </A.div>
+    \`\`\`
+
     ### Manual scroll trigger (useInView)
 
     \`\`\`tsx
     import { useInView } from "@vercel/animal/react";
 
     const { ref, inView } = useInView({ once: true });
+    \`\`\`
+
+    ### Manual scroll progress (useScrollProgress)
+
+    \`\`\`tsx
+    import { useScrollProgress } from "@vercel/animal/react";
+
+    const { ref, progress } = useScrollProgress();
     \`\`\`
 
     ## Manifest basics
