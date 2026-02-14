@@ -1,4 +1,5 @@
 import { ANIMAL_MANIFEST } from "@vercel/animal";
+import { PresetDemo } from "../../../components/PresetDemo";
 
 export default function PresetsPage() {
   const groups = ANIMAL_MANIFEST.presets.reduce<Record<string, typeof ANIMAL_MANIFEST.presets>>((acc, p) => {
@@ -25,6 +26,7 @@ export default function PresetsPage() {
                 <thead className="bg-black/5 text-black/70 dark:bg-white/5 dark:text-white/70">
                   <tr>
                     <th className="px-4 py-3 font-medium">Token</th>
+                    <th className="px-4 py-3 font-medium">Demo</th>
                     <th className="px-4 py-3 font-medium">Description</th>
                     <th className="px-4 py-3 font-medium">Defaults</th>
                   </tr>
@@ -34,6 +36,9 @@ export default function PresetsPage() {
                     <tr key={`${p.phase}:${p.name}`} className="border-t border-black/10 dark:border-white/10">
                       <td className="px-4 py-3 font-mono text-xs text-black/80 dark:text-white/80">
                         {`${p.phase}:${p.name}`}
+                      </td>
+                      <td className="px-4 py-3">
+                        <PresetDemo phase={p.phase} name={p.name} />
                       </td>
                       <td className="px-4 py-3 text-black/70 dark:text-white/70">{p.description}</td>
                       <td className="px-4 py-3 text-black/60 dark:text-white/60">
@@ -50,4 +55,3 @@ export default function PresetsPage() {
     </div>
   );
 }
-
