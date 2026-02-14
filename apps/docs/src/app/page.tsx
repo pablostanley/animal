@@ -19,16 +19,22 @@ export default function Home() {
           </p>
           <div className="flex flex-col gap-3 sm:flex-row sm:items-center">
             <Link
-              href="/presets"
+              href="/docs"
               className="inline-flex h-10 items-center justify-center rounded-md bg-black px-4 text-sm font-medium text-white dark:bg-white dark:text-black"
+            >
+              Read docs
+            </Link>
+            <Link
+              href="/docs/presets"
+              className="inline-flex h-10 items-center justify-center rounded-md border border-black/10 bg-black/5 px-4 text-sm font-medium text-black/70 hover:bg-black/10 dark:border-white/10 dark:bg-white/5 dark:text-white/80 dark:hover:bg-white/10"
             >
               Browse presets
             </Link>
             <Link
-              href="/manifest"
-              className="inline-flex h-10 items-center justify-center rounded-md border border-black/10 bg-black/5 px-4 text-sm font-medium text-black/70 hover:bg-black/10 dark:border-white/10 dark:bg-white/5 dark:text-white/80 dark:hover:bg-white/10"
+              href="/manifest.json"
+              className="text-sm text-black/50 hover:text-black dark:text-white/50 dark:hover:text-white"
             >
-              View agent manifest
+              Manifest JSON
             </Link>
             <span className="text-sm text-black/50 dark:text-white/50">
               {ANIMAL_MANIFEST.presets.length} presets in manifest v{ANIMAL_MANIFEST.schemaVersion}

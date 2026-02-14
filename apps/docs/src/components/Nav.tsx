@@ -10,10 +10,13 @@ export function Nav() {
             Animal
           </Link>
           <nav className="flex items-center gap-4 text-sm text-black/60 dark:text-white/70">
-            <Link href="/presets" className="hover:text-black dark:hover:text-white">
+            <Link href="/docs" className="hover:text-black dark:hover:text-white">
+              Docs
+            </Link>
+            <Link href="/docs/presets" className="hover:text-black dark:hover:text-white">
               Presets
             </Link>
-            <Link href="/manifest" className="hover:text-black dark:hover:text-white">
+            <Link href="/docs/manifest" className="hover:text-black dark:hover:text-white">
               Manifest
             </Link>
           </nav>
