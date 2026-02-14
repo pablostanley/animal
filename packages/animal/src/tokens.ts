@@ -72,6 +72,11 @@ function normalizeEasingToken(token: string): EasingName | null {
     return null;
   }
 
+  const cubic = /^cubic-(-?\d+\.?\d*)-(-?\d+\.?\d*)-(-?\d+\.?\d*)-(-?\d+\.?\d*)$/.exec(raw);
+  if (cubic) {
+    return `cubic-bezier(${cubic[1]}, ${cubic[2]}, ${cubic[3]}, ${cubic[4]})` as EasingName;
+  }
+
   return null;
 }
 
@@ -111,6 +116,22 @@ export function parseAnimalTokens(an: string | undefined): AnimalConfig {
     const reducedMotion = normalizeReducedMotionToken(raw);
     if (reducedMotion) {
       ensureOptions(config).reducedMotion = reducedMotion;
+      continue;
+    }
+
+    const staggerMatch = /^stagger-(\d+)$/.exec(raw);
+    if (staggerMatch) {
+      config.stagger = parseNumber(staggerMatch[1] ?? "") ?? undefined;
+      continue;
+    }
+
+    if (raw === "in-view") {
+      config.inView = true;
+      continue;
+    }
+
+    if (raw === "in-view-repeat") {
+      config.inView = { once: false };
       continue;
     }
 
