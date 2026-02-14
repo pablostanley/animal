@@ -43,6 +43,16 @@ export const ANIMAL_MANIFEST: AnimalManifest = Object.freeze({
       description: "Reduced motion policy (defaults to system).",
       examples: ["rm-system", "rm-always"],
     },
+    {
+      token: "in-view | in-view-repeat",
+      description: "Delay enter animation until element scrolls into viewport. in-view triggers once, in-view-repeat re-triggers on every intersection.",
+      examples: ["in-view", "in-view-repeat"],
+    },
+    {
+      token: "ease-cubic-<a>-<b>-<c>-<d>",
+      description: "Custom cubic-bezier easing curve.",
+      examples: ["ease-cubic-0.4-0-0.2-1", "ease-cubic-0.25-0.1-0.25-1"],
+    },
   ],
   presets: getPresetManifestItems(),
 });

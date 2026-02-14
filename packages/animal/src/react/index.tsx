@@ -2,9 +2,13 @@ import type * as React from "react";
 import { createAnimalComponent } from "./factory";
 
 export { Presence, usePresence } from "./Presence";
+export { Stagger, useStagger } from "./Stagger";
+export { useInView } from "./useInView";
 export { useReducedMotion } from "./useReducedMotion";
 
 export type { PresenceProps } from "./Presence";
+export type { StaggerProps } from "./Stagger";
+export type { InViewOptions } from "./useInView";
 export type { AnimalElementProps } from "./factory";
 
 type AnimalComponents = {

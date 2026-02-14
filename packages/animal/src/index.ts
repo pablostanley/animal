@@ -11,6 +11,7 @@ export type {
   AnimalManifest,
   AnimalOptions,
   EasingName,
+  InViewConfig,
   MotionState,
   PartialMotionState,
   PhaseConfig,
