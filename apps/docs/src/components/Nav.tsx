@@ -13,6 +13,9 @@ export function Nav() {
             <Link href="/docs" className="hover:text-black dark:hover:text-white">
               Docs
             </Link>
+            <Link href="/playground" className="hover:text-black dark:hover:text-white">
+              Playground
+            </Link>
             <Link href="/docs/api" className="hover:text-black dark:hover:text-white">
               API
             </Link>
