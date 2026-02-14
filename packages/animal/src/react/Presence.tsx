@@ -19,6 +19,9 @@ export type PresenceProps = {
 
 // MVP: single-presence boundary (enough for modals, toasts, route wrappers).
 export function Presence({ present, children, onExitComplete }: PresenceProps) {
+  const presentRef = React.useRef(present);
+  presentRef.current = present;
+
   const [isMounted, setIsMounted] = React.useState(present);
   const [isPresent, setIsPresent] = React.useState(present);
 
@@ -33,10 +36,10 @@ export function Presence({ present, children, onExitComplete }: PresenceProps) {
 
   const safeToRemove = React.useCallback(() => {
     // Only remove after we have transitioned from present -> not present.
-    if (present) return;
+    if (presentRef.current) return;
     setIsMounted(false);
     onExitComplete?.();
-  }, [onExitComplete, present]);
+  }, [onExitComplete]);
 
   if (!isMounted) return null;
 
