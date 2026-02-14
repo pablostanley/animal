@@ -73,6 +73,7 @@ function setRef<T>(ref: React.Ref<T> | undefined, value: T | null) {
 export type AnimalElementProps<TTag extends keyof React.JSX.IntrinsicElements> =
   React.JSX.IntrinsicElements[TTag] & {
   an?: string;
+  initial?: boolean;
 };
 
 export function createAnimalComponent<TTag extends keyof React.JSX.IntrinsicElements>(tag: TTag) {
@@ -81,6 +82,7 @@ export function createAnimalComponent<TTag extends keyof React.JSX.IntrinsicElem
   const Component = React.forwardRef<HTMLElement, Props>(function AnimalElement(
     {
       an,
+      initial = true,
       onPointerEnter,
       onPointerLeave,
       onPointerDown,
@@ -109,6 +111,7 @@ export function createAnimalComponent<TTag extends keyof React.JSX.IntrinsicElem
     const baseRef = React.useRef<MotionState | null>(null);
     const animationRef = React.useRef<Animation | null>(null);
 
+    const isFirstMountRef = React.useRef(true);
     const flagsRef = React.useRef({ hover: false, press: false, focus: false });
     const pressedPointerIdRef = React.useRef<number | null>(null);
 
@@ -247,8 +250,19 @@ export function createAnimalComponent<TTag extends keyof React.JSX.IntrinsicElem
 
       if (!enter) return;
 
-      const from = composeTarget(base, [enter.fromDelta]);
+      // Skip the enter animation on first mount when initial is false.
+      const skipEnter = !initial && isFirstMountRef.current;
+      isFirstMountRef.current = false;
+
       const to = composeTarget(base, [enter.toDelta]);
+
+      if (skipEnter) {
+        applyStyles(el, to, enter.affects);
+        baseRef.current = to;
+        return;
+      }
+
+      const from = composeTarget(base, [enter.fromDelta]);
 
       if (reducedMotion || enter.options.durationMs <= 0) {
         applyStyles(el, to, enter.affects);
@@ -269,7 +283,7 @@ export function createAnimalComponent<TTag extends keyof React.JSX.IntrinsicElem
         .catch(() => {
           // ignore cancellations
         });
-    }, [enter, reducedMotion]);
+    }, [enter, initial, reducedMotion]);
 
     // Exit animation (presence-aware).
     React.useEffect(() => {
