@@ -53,6 +53,16 @@ export const ANIMAL_MANIFEST: AnimalManifest = Object.freeze({
       description: "Custom cubic-bezier easing curve.",
       examples: ["ease-cubic-0.4-0-0.2-1", "ease-cubic-0.25-0.1-0.25-1"],
     },
+    {
+      token: "loop | loop-<count>",
+      description: "Repeat animation. loop = infinite, loop-N = N times. Applies to enter/hover/press/focus.",
+      examples: ["loop", "loop-3", "enter:loop"],
+    },
+    {
+      token: "scroll-progress",
+      description: "Link enter animation to scroll position (0% at bottom, 100% at top).",
+      examples: ["scroll-progress enter:fade-up", "scroll-progress enter:slide-up"],
+    },
   ],
   presets: getPresetManifestItems(),
 });

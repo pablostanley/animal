@@ -32,5 +32,15 @@ export function validate(an: string): ValidationResult {
     warnings.push("Exit preset without enter preset. Element will exit but has no enter animation.");
   }
 
+  // Warn about loop on exit phase
+  if (parsed.exit?.options?.loop !== undefined) {
+    warnings.push("Loop on exit phase has no effect (exit must complete for unmount).");
+  }
+
+  // Warn about scroll-progress + in-view conflict
+  if (parsed.scrollProgress && parsed.inView) {
+    warnings.push("scroll-progress and in-view are mutually exclusive. scroll-progress takes precedence.");
+  }
+
   return { valid: errors.length === 0, errors, warnings, parsed };
 }

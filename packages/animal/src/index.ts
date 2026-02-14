@@ -12,12 +12,14 @@ export type {
   AnimalOptions,
   EasingName,
   InViewConfig,
+  KeyframeStep,
   MotionState,
   PartialMotionState,
   PhaseConfig,
   PresetManifestItem,
   PresetParams,
   PresetPhase,
+  ScrollProgressConfig,
   SpringPresetName,
 } from "./types";
 
