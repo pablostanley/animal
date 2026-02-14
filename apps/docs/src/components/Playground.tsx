@@ -69,9 +69,14 @@ export function Playground() {
   const baseX = atRight ? distance : 0;
   const durationUsed = nonce === 0 ? 0 : duration;
 
-  const an = React.useMemo(
+  const anRuntime = React.useMemo(
     () => `enter:${preset} x-${distance} duration-${durationUsed} ${easeToken}`,
     [distance, durationUsed, easeToken, preset]
+  );
+
+  const anExport = React.useMemo(
+    () => `enter:${preset} x-${distance} duration-${duration} ${easeToken}`,
+    [distance, duration, easeToken, preset]
   );
 
   const code = React.useMemo(
@@ -79,10 +84,10 @@ export function Playground() {
 
 export function Example() {
   return (
-    <A.div an="${an}" />
+    <A.div an="${anExport}" />
   );
 }`,
-    [an]
+    [anExport]
   );
 
   const cssEases = React.useMemo(() => EASES.filter((e) => e.group === "css"), []);
@@ -177,7 +182,7 @@ export function Example() {
               }}
               className="h-9 rounded-md border border-black/10 bg-black/5 px-3 text-sm text-black/70 hover:bg-black/10 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-black/30 focus-visible:ring-offset-2 focus-visible:ring-offset-[var(--background)] dark:border-white/10 dark:bg-white/5 dark:text-white/80 dark:hover:bg-white/10 dark:focus-visible:ring-white/30"
             >
-              Replay
+              Bounce
             </button>
           </div>
 
@@ -200,10 +205,10 @@ export function Example() {
               <A.div
                 // Key forces a re-mount so the enter phase runs again.
                 key={`${easeToken}-${duration}-${distance}-${preset}-${atRight}-${nonce}`}
-                an={an}
+                an={anRuntime}
                 className="h-10 w-10 rounded-xl bg-black dark:bg-white"
                 style={{ transform: `translate(${baseX}px, 0px) rotate(0deg) scale(1)` }}
-                aria-label="Preview square"
+                aria-hidden="true"
               />
             </div>
 
@@ -227,13 +232,13 @@ export function Example() {
                 </span>
                 <input
                   type="range"
-                  min={24}
-                  max={Math.max(24, maxDistance)}
+                  min={0}
+                  max={maxDistance}
                   step={4}
                   value={distance}
                   onChange={(e) => {
                     distanceTouchedRef.current = true;
-                    setDistance(clampInt(Number(e.target.value), 24, Math.max(24, maxDistance)));
+                    setDistance(clampInt(Number(e.target.value), 0, maxDistance));
                   }}
                 />
               </label>
@@ -246,7 +251,7 @@ export function Example() {
           <p className="mt-2 text-sm leading-6 text-black/60 dark:text-white/60">
             Token string:
             <span className="mt-2 block rounded-xl border border-black/10 bg-black/5 p-3 font-mono text-xs text-black/70 dark:border-white/10 dark:bg-white/5 dark:text-white/70">
-              {an}
+              {anExport}
             </span>
           </p>
           <div className="mt-4">
