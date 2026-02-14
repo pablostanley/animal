@@ -8,7 +8,8 @@ export type EasingName =
   | "ease-in"
   | "ease-out"
   | "ease-in-out"
-  | `spring-${SpringPresetName}`;
+  | `spring-${SpringPresetName}`
+  | `cubic-bezier(${string})`;
 
 export type MotionState = Readonly<{
   x: number;
@@ -42,6 +43,12 @@ export type PhaseConfig = {
   options?: AnimalOptions;
 };
 
+export type InViewConfig = {
+  threshold?: number;
+  rootMargin?: string;
+  once?: boolean;
+};
+
 export type AnimalConfig = {
   enter?: PhaseConfig;
   exit?: PhaseConfig;
@@ -49,6 +56,8 @@ export type AnimalConfig = {
   press?: PhaseConfig;
   focus?: PhaseConfig;
   options?: AnimalOptions;
+  stagger?: number;
+  inView?: boolean | InViewConfig;
   unknownTokens?: string[];
 };
 
