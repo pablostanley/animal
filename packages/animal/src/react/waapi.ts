@@ -1,6 +1,6 @@
 import { CSS_EASINGS, SPRING_PRESETS, getSpringPresetName, isSpringEasing } from "../easings";
 import { simulateSpring } from "../spring";
-import type { EasingName, MotionState, PartialMotionState, SpringPresetName } from "../types";
+import type { EasingName, KeyframeStep, MotionState, PartialMotionState, SpringPresetName } from "../types";
 
 type Affects = ReadonlyArray<"transform" | "opacity">;
 
@@ -108,6 +108,7 @@ export type AnimateOptions = Readonly<{
   durationMs: number;
   delayMs: number;
   easing: EasingName;
+  loop?: boolean | number;
 }>;
 
 export type AnimateResult = Readonly<{
@@ -141,6 +142,7 @@ export function animateBetween(
   const duration = Math.max(0, options.durationMs);
   const delay = Math.max(0, options.delayMs);
   const fill: FillMode = "both";
+  const iterations = options.loop === true ? Infinity : typeof options.loop === "number" ? options.loop : 1;
 
   if (isSpringEasing(options.easing)) {
     const preset = getSpringPresetName(options.easing);
@@ -166,7 +168,7 @@ export function animateBetween(
       return frame;
     });
 
-    const animation = el.animate(keyframes, { duration, delay, easing: "linear", fill });
+    const animation = el.animate(keyframes, { duration, delay, easing: "linear", fill, iterations, direction: "normal" });
     animation.finished.finally(() => {
       const state = WILL_CHANGE_STATE.get(el);
       if (!state || state.token !== token) return;
@@ -193,7 +195,7 @@ export function animateBetween(
   }
 
   keyframes.push(fromFrame, toFrame);
-  const animation = el.animate(keyframes, { duration, delay, easing, fill });
+  const animation = el.animate(keyframes, { duration, delay, easing, fill, iterations });
   animation.finished.finally(() => {
     const state = WILL_CHANGE_STATE.get(el);
     if (!state || state.token !== token) return;
@@ -201,4 +203,67 @@ export function animateBetween(
     WILL_CHANGE_STATE.delete(el);
   });
   return { animation, to };
+}
+
+export function animateKeyframes(
+  el: HTMLElement,
+  keyframeSteps: readonly KeyframeStep[],
+  base: MotionState,
+  options: AnimateOptions,
+  affects: Affects
+): AnimateResult {
+  const lastStep = keyframeSteps[keyframeSteps.length - 1];
+  const to = lastStep ? applyDelta(base, lastStep.state) : base;
+
+  if (typeof el.animate !== "function") {
+    applyStyles(el, to, affects);
+    const animation = {
+      finished: Promise.resolve(),
+      cancel: () => {},
+    } as unknown as Animation;
+    return { animation, to };
+  }
+
+  const waapiKeyframes: Keyframe[] = keyframeSteps.map(({ offset, state }) => {
+    const composed = applyDelta(base, state);
+    const frame: Keyframe = { offset };
+    if (affects.includes("transform")) frame.transform = buildTransform(composed);
+    if (affects.includes("opacity")) frame.opacity = composed.opacity;
+    return frame;
+  });
+
+  const duration = Math.max(0, options.durationMs);
+  const delay = Math.max(0, options.delayMs);
+  const iterations = options.loop === true ? Infinity : typeof options.loop === "number" ? options.loop : 1;
+
+  const willChange = affects.join(", ");
+  const currentState = WILL_CHANGE_STATE.get(el);
+  const baseWillChange = currentState?.base ?? el.style.willChange;
+  const token = (WILL_CHANGE_TOKEN += 1);
+  WILL_CHANGE_STATE.set(el, { base: baseWillChange, token });
+  el.style.willChange = baseWillChange ? `${baseWillChange}, ${willChange}` : willChange;
+
+  const animation = el.animate(waapiKeyframes, {
+    duration, delay, easing: "linear", fill: "both", iterations,
+  });
+
+  animation.finished.finally(() => {
+    const state = WILL_CHANGE_STATE.get(el);
+    if (!state || state.token !== token) return;
+    el.style.willChange = state.base;
+    WILL_CHANGE_STATE.delete(el);
+  });
+
+  return { animation, to };
+}
+
+export function interpolateState(from: MotionState, to: MotionState, progress: number): MotionState {
+  const t = Math.max(0, Math.min(1, progress));
+  return {
+    x: lerp(from.x, to.x, t),
+    y: lerp(from.y, to.y, t),
+    scale: lerp(from.scale, to.scale, t),
+    rotate: lerp(from.rotate, to.rotate, t),
+    opacity: lerp(from.opacity, to.opacity, t),
+  };
 }
