@@ -246,6 +246,13 @@ export function createAnimalComponent<TTag extends keyof React.JSX.IntrinsicElem
       };
     }, [registerPresence]);
 
+    // Cancel any running animation on unmount.
+    React.useEffect(() => {
+      return () => {
+        stopAnimation();
+      };
+    }, [stopAnimation]);
+
     // Enter animation: run before paint to prevent flicker.
     useIsomorphicLayoutEffect(() => {
       const el = localRef.current;
