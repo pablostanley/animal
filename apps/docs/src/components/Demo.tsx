@@ -58,11 +58,15 @@ export function Demo() {
           className="mt-6 rounded-2xl border border-black/10 bg-white p-6 dark:border-white/10 dark:bg-black"
           role="dialog"
           aria-modal="true"
+          aria-labelledby="presence-title"
+          aria-describedby="presence-desc"
         >
           <div className="flex items-start justify-between gap-4">
             <div>
-              <p className="text-sm font-semibold text-black dark:text-white">Presence</p>
-              <p className="mt-1 text-sm text-black/60 dark:text-white/60">
+              <p id="presence-title" className="text-sm font-semibold text-black dark:text-white">
+                Presence
+              </p>
+              <p id="presence-desc" className="mt-1 text-sm text-black/60 dark:text-white/60">
                 This block stays mounted until the exit preset finishes.
               </p>
             </div>
