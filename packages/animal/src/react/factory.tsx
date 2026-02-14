@@ -77,7 +77,18 @@ export function createAnimalComponent<TTag extends keyof React.JSX.IntrinsicElem
   type Props = AnimalElementProps<TTag>;
 
   const Component = React.forwardRef<HTMLElement, Props>(function AnimalElement(
-    { an, onPointerEnter, onPointerLeave, onPointerDown, onPointerUp, onPointerCancel, onFocus, onBlur, ...rest },
+    {
+      an,
+      onPointerEnter,
+      onPointerLeave,
+      onPointerDown,
+      onPointerUp,
+      onPointerCancel,
+      onLostPointerCapture,
+      onFocus,
+      onBlur,
+      ...rest
+    },
     forwardedRef
   ) {
     const localRef = React.useRef<HTMLElement | null>(null);
@@ -96,6 +107,7 @@ export function createAnimalComponent<TTag extends keyof React.JSX.IntrinsicElem
     const animationRef = React.useRef<Animation | null>(null);
 
     const flagsRef = React.useRef({ hover: false, press: false, focus: false });
+    const pressedPointerIdRef = React.useRef<number | null>(null);
 
     const stopAnimation = React.useCallback(() => {
       const anim = animationRef.current;
@@ -166,6 +178,37 @@ export function createAnimalComponent<TTag extends keyof React.JSX.IntrinsicElem
         animateTo(target, phaseSpec.options, ["transform"]);
       },
       [animateTo, focus, hover, press]
+    );
+
+    const startPress = React.useCallback(
+      (e: React.PointerEvent) => {
+        if (!press) return;
+        if (pressedPointerIdRef.current !== null) return;
+        pressedPointerIdRef.current = e.pointerId;
+        try {
+          e.currentTarget.setPointerCapture(e.pointerId);
+        } catch {
+          // ignore
+        }
+        setInteraction("press", true, press);
+      },
+      [press, setInteraction]
+    );
+
+    const endPress = React.useCallback(
+      (e: React.PointerEvent) => {
+        if (!press) return;
+        if (pressedPointerIdRef.current === null) return;
+        if (pressedPointerIdRef.current !== e.pointerId) return;
+        pressedPointerIdRef.current = null;
+        try {
+          e.currentTarget.releasePointerCapture(e.pointerId);
+        } catch {
+          // ignore
+        }
+        setInteraction("press", false, press);
+      },
+      [press, setInteraction]
     );
 
     // Enter animation: run before paint to prevent flicker.
@@ -252,15 +295,19 @@ export function createAnimalComponent<TTag extends keyof React.JSX.IntrinsicElem
       },
       onPointerDown: (e: React.PointerEvent) => {
         onPointerDown?.(e as never);
-        if (press) setInteraction("press", true, press);
+        startPress(e);
       },
       onPointerUp: (e: React.PointerEvent) => {
         onPointerUp?.(e as never);
-        if (press) setInteraction("press", false, press);
+        endPress(e);
       },
       onPointerCancel: (e: React.PointerEvent) => {
         onPointerCancel?.(e as never);
-        if (press) setInteraction("press", false, press);
+        endPress(e);
+      },
+      onLostPointerCapture: (e: React.PointerEvent) => {
+        onLostPointerCapture?.(e as never);
+        endPress(e);
       },
       onFocus: (e: React.FocusEvent) => {
         onFocus?.(e as never);
