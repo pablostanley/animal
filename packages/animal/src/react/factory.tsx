@@ -255,13 +255,15 @@ export function createAnimalComponent<TTag extends keyof React.JSX.IntrinsicElem
         return;
       }
 
+      // Set base to the enter target immediately so interactions compose correctly.
+      baseRef.current = to;
+
       applyStyles(el, from, enter.affects);
       const { animation } = animateBetween(el, from, to, enter.options, enter.affects);
       animationRef.current = animation;
       animation.finished
         .then(() => {
           applyStyles(el, to, enter.affects);
-          baseRef.current = to;
         })
         .catch(() => {
           // ignore cancellations
