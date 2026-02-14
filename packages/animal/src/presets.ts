@@ -61,6 +61,7 @@ function withDefaults(params: PresetParams | undefined, defaults: Required<Prese
     x: params?.x ?? defaults.x,
     y: params?.y ?? defaults.y,
     scale: params?.scale ?? defaults.scale,
+    rotate: params?.rotate ?? defaults.rotate,
   };
 }
 
@@ -300,6 +301,7 @@ export function resolvePreset(
     x: spec.params.x?.default ?? 0,
     y: spec.params.y?.default ?? 0,
     scale: spec.params.scale?.default ?? 1,
+    rotate: spec.params.rotate?.default ?? 0,
   };
 
   const p = withDefaults(params, defaults);

@@ -26,6 +26,7 @@ export type PresetParams = {
   x?: number;
   y?: number;
   scale?: number;
+  rotate?: number;
 };
 
 export type AnimalOptions = {
@@ -60,6 +61,7 @@ export type PresetManifestItem = {
     x?: { default: number; unit: "px"; description: string };
     y?: { default: number; unit: "px"; description: string };
     scale?: { default: number; unit: "ratio"; description: string };
+    rotate?: { default: number; unit: "deg"; description: string };
   };
   defaults: {
     durationMs: number;

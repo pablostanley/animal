@@ -40,11 +40,11 @@ function parseDelayToken(raw: string): number | null {
   return parseNumber(m[1] ?? "");
 }
 
-function parseParamToken(raw: string): { key: "x" | "y" | "scale"; value: number } | null {
-  const m = /^(x|y|scale)-(-?\d+(?:\.\d+)?)$/.exec(raw);
+function parseParamToken(raw: string): { key: "x" | "y" | "scale" | "rotate"; value: number } | null {
+  const m = /^(x|y|scale|rotate)-(-?\d+(?:\.\d+)?)$/.exec(raw);
   if (!m) return null;
   const key = m[1];
-  if (key !== "x" && key !== "y" && key !== "scale") return null;
+  if (key !== "x" && key !== "y" && key !== "scale" && key !== "rotate") return null;
   const value = parseNumber(m[2] ?? "");
   if (value === null) return null;
   return { key, value };

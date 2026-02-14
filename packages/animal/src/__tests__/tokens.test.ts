@@ -44,6 +44,21 @@ describe("parseAnimalTokens()", () => {
     expect(config.enter?.preset).toBe("fade");
   });
 
+  it("parses rotate param tokens", () => {
+    const config = parseAnimalTokens("rotate-45");
+    expect(config.enter?.params?.rotate).toBe(45);
+  });
+
+  it("parses phase-scoped rotate token", () => {
+    const config = parseAnimalTokens("hover:rotate-10");
+    expect(config.hover?.params?.rotate).toBe(10);
+  });
+
+  it("parses negative rotate token", () => {
+    const config = parseAnimalTokens("rotate--15");
+    expect(config.enter?.params?.rotate).toBe(-15);
+  });
+
   it("collects unknown tokens for agents to surface", () => {
     const config = parseAnimalTokens("enter:fade-up hover:wat foo:bar");
     expect(config.unknownTokens).toEqual(["hover:wat", "foo:bar"]);
