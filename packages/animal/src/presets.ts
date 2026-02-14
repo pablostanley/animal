@@ -1,5 +1,6 @@
 import type {
   EasingName,
+  KeyframeStep,
   PartialMotionState,
   PresetManifestItem,
   PresetParams,
@@ -13,10 +14,9 @@ type PresetSpec = Readonly<{
   affects: PresetManifestItem["affects"];
   defaults: PresetManifestItem["defaults"];
   params: PresetManifestItem["params"];
-  resolve: (params: Required<PresetParams>) => Readonly<{
-    fromDelta?: PartialMotionState;
-    toDelta?: PartialMotionState;
-  }>;
+  resolve: (params: Required<PresetParams>) =>
+    | Readonly<{ fromDelta?: PartialMotionState; toDelta?: PartialMotionState }>
+    | Readonly<{ keyframes: readonly KeyframeStep[] }>;
 }>;
 
 const pxParam = (def: number, description: string) => ({ default: def, unit: "px" as const, description });
@@ -166,6 +166,54 @@ export const PRESETS: readonly PresetSpec[] = [
     params: { scale: scaleParam(0.96, "Initial scale.") },
     resolve: (p) => ({ fromDelta: { scale: p.scale - 1 }, toDelta: {} }),
   },
+  {
+    phase: "enter",
+    name: "bounce-in",
+    description: "Bounce in with elastic overshoot.",
+    affects: ["opacity", "transform"],
+    defaults: { durationMs: 600, delayMs: 0, easing: "linear" },
+    params: { y: pxParam(24, "Initial Y offset.") },
+    resolve: (p) => ({
+      keyframes: [
+        { offset: 0, state: { opacity: -1, y: p.y } },
+        { offset: 0.5, state: { opacity: 0, y: -6 } },
+        { offset: 0.75, state: { y: 3 } },
+        { offset: 1, state: {} },
+      ],
+    }),
+  },
+  {
+    phase: "enter",
+    name: "elastic-scale",
+    description: "Scale in with elastic bounce.",
+    affects: ["opacity", "transform"],
+    defaults: { durationMs: 600, delayMs: 0, easing: "linear" },
+    params: { scale: scaleParam(0.85, "Initial scale.") },
+    resolve: (p) => ({
+      keyframes: [
+        { offset: 0, state: { opacity: -1, scale: p.scale - 1 } },
+        { offset: 0.55, state: { opacity: 0, scale: 0.06 } },
+        { offset: 0.75, state: { scale: -0.03 } },
+        { offset: 1, state: {} },
+      ],
+    }),
+  },
+  {
+    phase: "enter",
+    name: "drop-in",
+    description: "Drop in from above with bounce.",
+    affects: ["opacity", "transform"],
+    defaults: { durationMs: 600, delayMs: 0, easing: "linear" },
+    params: { y: pxParam(30, "Drop distance.") },
+    resolve: (p) => ({
+      keyframes: [
+        { offset: 0, state: { opacity: -1, y: -p.y } },
+        { offset: 0.5, state: { opacity: 0, y: 4 } },
+        { offset: 0.75, state: { y: -2 } },
+        { offset: 1, state: {} },
+      ],
+    }),
+  },
   // Exit
   {
     phase: "exit",
@@ -266,6 +314,20 @@ export const PRESETS: readonly PresetSpec[] = [
     params: { scale: scaleParam(0.96, "Final scale.") },
     resolve: (p) => ({ toDelta: { scale: p.scale - 1 } }),
   },
+  {
+    phase: "exit",
+    name: "zoom-out",
+    description: "Scale up and fade out.",
+    affects: ["opacity", "transform"],
+    defaults: EXIT_DEFAULTS,
+    params: { scale: scaleParam(1.1, "Final scale.") },
+    resolve: (p) => ({
+      keyframes: [
+        { offset: 0, state: {} },
+        { offset: 1, state: { opacity: -1, scale: p.scale - 1 } },
+      ],
+    }),
+  },
   // Hover
   {
     phase: "hover",
@@ -352,6 +414,7 @@ export function resolvePreset(
 ): Readonly<{
   fromDelta?: PartialMotionState;
   toDelta?: PartialMotionState;
+  keyframes?: readonly KeyframeStep[];
   defaults: { durationMs: number; delayMs: number; easing: EasingName };
   affects: PresetManifestItem["affects"];
   paramsMeta: PresetManifestItem["params"];
@@ -367,7 +430,17 @@ export function resolvePreset(
   };
 
   const p = withDefaults(params, defaults);
-  const { fromDelta, toDelta } = spec.resolve(p);
+  const resolved = spec.resolve(p);
+
+  if ("keyframes" in resolved) {
+    return {
+      keyframes: resolved.keyframes,
+      defaults: spec.defaults,
+      affects: spec.affects,
+      paramsMeta: spec.params,
+    };
+  }
+
   const result: {
     fromDelta?: PartialMotionState;
     toDelta?: PartialMotionState;
@@ -380,8 +453,8 @@ export function resolvePreset(
     paramsMeta: spec.params,
   };
 
-  if (fromDelta !== undefined) result.fromDelta = fromDelta;
-  if (toDelta !== undefined) result.toDelta = toDelta;
+  if (resolved.fromDelta !== undefined) result.fromDelta = resolved.fromDelta;
+  if (resolved.toDelta !== undefined) result.toDelta = resolved.toDelta;
   return result;
 }
 
