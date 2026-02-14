@@ -23,6 +23,11 @@ export type MotionStateKey = keyof MotionState;
 
 export type PartialMotionState = Partial<MotionState>;
 
+export type KeyframeStep = Readonly<{
+  offset: number;
+  state: PartialMotionState;
+}>;
+
 export type PresetParams = {
   x?: number;
   y?: number;
@@ -34,6 +39,7 @@ export type AnimalOptions = {
   duration?: number;
   delay?: number;
   easing?: EasingName;
+  loop?: boolean | number;
   reducedMotion?: "system" | "always" | "never";
 };
 
@@ -49,6 +55,12 @@ export type InViewConfig = {
   once?: boolean;
 };
 
+export type ScrollProgressConfig = {
+  start?: number;
+  end?: number;
+  clamp?: boolean;
+};
+
 export type AnimalConfig = {
   enter?: PhaseConfig;
   exit?: PhaseConfig;
@@ -58,6 +70,7 @@ export type AnimalConfig = {
   options?: AnimalOptions;
   stagger?: number;
   inView?: boolean | InViewConfig;
+  scrollProgress?: boolean | ScrollProgressConfig;
   unknownTokens?: string[];
 };
 
