@@ -106,7 +106,7 @@ export function Example() {
 
       <div className="mt-8 grid grid-cols-1 gap-6 lg:grid-cols-12">
         <section className="lg:col-span-3">
-          <p className="text-xs font-semibold uppercase tracking-[0.16em] text-black/50 dark:text-white/60">Easing</p>
+          <h2 className="text-xs font-semibold uppercase tracking-[0.16em] text-black/50 dark:text-white/60">Easing</h2>
 
           <div className="mt-3 overflow-hidden rounded-xl border border-black/10 dark:border-white/10">
             <div className="border-b border-black/10 bg-black/5 px-3 py-2 text-[11px] text-black/60 dark:border-white/10 dark:bg-white/5 dark:text-white/60">
@@ -173,7 +173,9 @@ export function Example() {
 
         <section className="lg:col-span-6">
           <div className="flex items-center justify-between gap-3">
-            <p className="text-xs font-semibold uppercase tracking-[0.16em] text-black/50 dark:text-white/60">Preview</p>
+            <h2 className="text-xs font-semibold uppercase tracking-[0.16em] text-black/50 dark:text-white/60">
+              Preview
+            </h2>
             <button
               type="button"
               onClick={() => {
@@ -219,6 +221,7 @@ export function Example() {
                 </span>
                 <input
                   type="range"
+                  name="duration"
                   min={120}
                   max={1800}
                   step={10}
@@ -232,6 +235,7 @@ export function Example() {
                 </span>
                 <input
                   type="range"
+                  name="distance"
                   min={0}
                   max={maxDistance}
                   step={4}
@@ -247,7 +251,7 @@ export function Example() {
         </section>
 
         <section className="lg:col-span-3">
-          <p className="text-xs font-semibold uppercase tracking-[0.16em] text-black/50 dark:text-white/60">Export</p>
+          <h2 className="text-xs font-semibold uppercase tracking-[0.16em] text-black/50 dark:text-white/60">Export</h2>
           <p className="mt-2 text-sm leading-6 text-black/60 dark:text-white/60">
             Token string:
             <span className="mt-2 block rounded-xl border border-black/10 bg-black/5 p-3 font-mono text-xs text-black/70 dark:border-white/10 dark:bg-white/5 dark:text-white/70">
