@@ -12,7 +12,7 @@ export function Nav() {
           >
             Animal
           </Link>
-          <nav className="flex items-center gap-4 text-sm text-black/60 dark:text-white/70">
+          <nav aria-label="Primary" className="flex items-center gap-4 text-sm text-black/60 dark:text-white/70">
             <Link
               href="/docs"
               className="rounded-md hover:text-black focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-black/30 focus-visible:ring-offset-2 focus-visible:ring-offset-[var(--background)] dark:hover:text-white dark:focus-visible:ring-white/30"
