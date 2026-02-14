@@ -51,6 +51,9 @@ function parseParamToken(raw: string): { key: "x" | "y" | "scale"; value: number
 }
 
 function normalizeEasingToken(token: string): EasingName | null {
+  // Agent-friendly shorthand (aligns with docs): `ease` means CSS `ease`.
+  if (token === "ease") return "ease";
+
   const m = /^ease-(.+)$/.exec(token);
   if (!m) return null;
 
@@ -152,4 +155,3 @@ export function parseAnimalTokens(an: string | undefined): AnimalConfig {
   if (unknown.length > 0) config.unknownTokens = unknown;
   return config;
 }
-

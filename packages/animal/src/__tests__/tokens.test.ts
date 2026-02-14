@@ -10,6 +10,12 @@ describe("parseAnimalTokens()", () => {
     expect(config.options?.easing).toBe("ease-in-out");
   });
 
+  it("supports `ease` shorthand", () => {
+    const config = parseAnimalTokens("fade ease duration-120");
+    expect(config.enter?.preset).toBe("fade");
+    expect(config.options?.easing).toBe("ease");
+  });
+
   it("parses phase-scoped presets and options", () => {
     const config = parseAnimalTokens("hover:lift hover:duration-100 press:compress press:delay-0");
     expect(config.hover?.preset).toBe("lift");
@@ -36,4 +42,3 @@ describe("parseAnimalTokens()", () => {
     expect(config.unknownTokens).toEqual(["hover:wat", "foo:bar"]);
   });
 });
-
