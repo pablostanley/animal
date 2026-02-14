@@ -1,4 +1,5 @@
 import Link from "next/link";
+import { CodeBlock } from "@/components/CodeBlock";
 
 export default function DocsHomePage() {
   return (
@@ -16,6 +17,12 @@ export default function DocsHomePage() {
           className="inline-flex h-10 items-center justify-center rounded-md bg-black px-4 text-sm font-medium text-white dark:bg-white dark:text-black"
         >
           Presets
+        </Link>
+        <Link
+          href="/docs/api"
+          className="inline-flex h-10 items-center justify-center rounded-md border border-black/10 bg-black/5 px-4 text-sm font-medium text-black/70 hover:bg-black/10 dark:border-white/10 dark:bg-white/5 dark:text-white/80 dark:hover:bg-white/10"
+        >
+          API
         </Link>
         <Link
           href="/docs/manifest"
@@ -36,8 +43,10 @@ export default function DocsHomePage() {
           Use <code className="rounded bg-white/10 px-1.5 py-0.5">A</code> to animate DOM elements and{" "}
           <code className="rounded bg-white/10 px-1.5 py-0.5">Presence</code> to keep elements mounted until exit finishes.
         </p>
-        <pre className="mt-4 overflow-auto rounded-2xl border border-black/10 bg-black/5 p-4 text-xs text-black/70 dark:border-white/10 dark:bg-black dark:text-white/70">
-          {`import { A, Presence } from "@vercel/animal/react";
+        <div className="mt-4">
+          <CodeBlock
+            lang="tsx"
+            code={`import { A, Presence } from "@vercel/animal/react";
 
 export function Example({ open }: { open: boolean }) {
   return (
@@ -48,7 +57,8 @@ export function Example({ open }: { open: boolean }) {
     </Presence>
   );
 }`}
-        </pre>
+          />
+        </div>
       </section>
 
       <section className="mt-10">
@@ -57,8 +67,10 @@ export function Example({ open }: { open: boolean }) {
           The <code className="rounded bg-white/10 px-1.5 py-0.5">an</code> prop is a space-separated list of tokens.
           Presets are usually phase-scoped like <code className="rounded bg-white/10 px-1.5 py-0.5">hover:lift</code>.
         </p>
-        <pre className="mt-4 overflow-auto rounded-2xl border border-black/10 bg-black/5 p-4 text-xs text-black/70 dark:border-white/10 dark:bg-black dark:text-white/70">
-          {`// phases
+        <div className="mt-4">
+          <CodeBlock
+            lang="txt"
+            code={`// phases
 enter:fade-up exit:fade-down hover:lift press:compress focus:lift
 
 // timing
@@ -69,9 +81,9 @@ ease-in-out ease-spring-default ease-spring-snappy ease-spring-bouncy
 
 // transforms (px or unitless)
 x-12 y--8 scale-1.03`}
-        </pre>
+          />
+        </div>
       </section>
     </div>
   );
 }
-

@@ -13,6 +13,9 @@ export function Nav() {
             <Link href="/docs" className="hover:text-black dark:hover:text-white">
               Docs
             </Link>
+            <Link href="/docs/api" className="hover:text-black dark:hover:text-white">
+              API
+            </Link>
             <Link href="/docs/presets" className="hover:text-black dark:hover:text-white">
               Presets
             </Link>
