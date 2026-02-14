@@ -5,10 +5,12 @@ export { Presence, usePresence } from "./Presence";
 export { Stagger, useStagger } from "./Stagger";
 export { useInView } from "./useInView";
 export { useReducedMotion } from "./useReducedMotion";
+export { useScrollProgress } from "./useScrollProgress";
 
 export type { PresenceProps } from "./Presence";
 export type { StaggerProps } from "./Stagger";
 export type { InViewOptions } from "./useInView";
+export type { ScrollProgressOptions } from "./useScrollProgress";
 export type { AnimalElementProps } from "./factory";
 
 type AnimalComponents = {
