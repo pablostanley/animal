@@ -27,12 +27,14 @@ function mergePhaseOptions(
   local: PhaseConfig | undefined
 ): Readonly<{ durationMs: number; delayMs: number; easing: EasingName; loop?: boolean | number }> {
   const localOpts = local?.options;
-  return {
+  const loop = localOpts?.loop ?? global?.loop;
+  const result: { durationMs: number; delayMs: number; easing: EasingName; loop?: boolean | number } = {
     durationMs: (localOpts?.duration ?? global?.duration ?? defaults.durationMs) as number,
     delayMs: (localOpts?.delay ?? global?.delay ?? defaults.delayMs) as number,
     easing: (localOpts?.easing ?? global?.easing ?? defaults.easing) as EasingName,
-    loop: localOpts?.loop ?? global?.loop,
   };
+  if (loop !== undefined) result.loop = loop;
+  return result;
 }
 
 function resolvePhase(config: AnimalConfig, phase: PresetPhase): ResolvedPhase | null {
@@ -472,7 +474,7 @@ export function createAnimalComponent<TTag extends keyof React.JSX.IntrinsicElem
       }
 
       // Exit never loops — it must complete to allow unmount.
-      const exitOptions = { ...exit.options, loop: undefined };
+      const { loop: _loop, ...exitOptions } = exit.options;
 
       if (exit.keyframes) {
         const { animation } = animateKeyframes(el, exit.keyframes, base, exitOptions, exit.affects);
