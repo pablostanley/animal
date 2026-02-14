@@ -1,4 +1,5 @@
 import { ANIMAL_MANIFEST } from "@vercel/animal";
+import type { PresetManifestItem } from "@vercel/animal";
 
 function dedent(strings: TemplateStringsArray, ...values: unknown[]) {
   let out = strings.reduce((acc, s, i) => acc + s + (values[i] == null ? "" : String(values[i])), "");
@@ -11,7 +12,35 @@ function dedent(strings: TemplateStringsArray, ...values: unknown[]) {
   return lines.map((l) => l.slice(indent)).join("\n");
 }
 
+function formatPresetLine(p: PresetManifestItem): string {
+  const paramEntries = Object.entries(p.params) as Array<
+    [string, { default: number; unit: string }]
+  >;
+  const paramStr =
+    paramEntries.length > 0
+      ? ` [params: ${paramEntries.map(([k, v]) => `${k}=${v.default}${v.unit}`).join(", ")}]`
+      : "";
+  return `- ${p.phase}:${p.name} — ${p.description} (${p.defaults.durationMs}ms, ${p.defaults.easing})${paramStr}`;
+}
+
+function generatePresetCatalog(): string {
+  const phases = ["enter", "exit", "hover", "press", "focus"] as const;
+  const sections: string[] = [];
+
+  for (const phase of phases) {
+    const presets = ANIMAL_MANIFEST.presets.filter((p) => p.phase === phase);
+    if (presets.length === 0) continue;
+    const heading = phase.charAt(0).toUpperCase() + phase.slice(1);
+    const lines = presets.map(formatPresetLine);
+    sections.push(`### ${heading}\n${lines.join("\n")}`);
+  }
+
+  return sections.join("\n\n");
+}
+
 export function GET() {
+  const presetCatalog = generatePresetCatalog();
+
   const body = dedent`
     # Animal (Vercel) - LLM Quick Reference
 
@@ -24,6 +53,7 @@ export function GET() {
     - Presets: /docs/presets
     - Manifest viewer: /docs/manifest
     - Machine-readable manifest: /manifest.json
+    - JSON Schema: /manifest.schema.json
 
     ## React usage
 
@@ -51,13 +81,57 @@ export function GET() {
     - Timing:
       - \`duration-<ms>\` (e.g. \`duration-240\`)
       - \`delay-<ms>\` (e.g. \`delay-80\`)
-	    - Easing:
-	      - \`ease-linear\` | \`ease\` | \`ease-in\` | \`ease-out\` | \`ease-in-out\`
-	      - \`ease-spring-default\` | \`ease-spring-snappy\` | \`ease-spring-bouncy\` | \`ease-spring-strong\`
-	    - Transforms (tokens apply as overrides):
-	      - \`x-<px>\`, \`y-<px>\`, \`scale-<ratio>\` (e.g. \`y--8\`, \`scale-1.03\`)
-	    - Reduced motion:
-	      - \`rm-system\` | \`rm-always\` | \`rm-never\`
+    - Easing:
+      - \`ease-linear\` | \`ease\` | \`ease-in\` | \`ease-out\` | \`ease-in-out\`
+      - \`ease-spring-default\` | \`ease-spring-snappy\` | \`ease-spring-bouncy\` | \`ease-spring-strong\`
+    - Transforms (tokens apply as overrides):
+      - \`x-<px>\`, \`y-<px>\`, \`scale-<ratio>\`, \`rotate-<deg>\` (e.g. \`y--8\`, \`scale-1.03\`, \`rotate-45\`)
+    - Reduced motion:
+      - \`rm-system\` | \`rm-always\` | \`rm-never\`
+
+    ## Available presets
+
+    ${presetCatalog}
+
+    ## Common patterns
+
+    ### Modal
+
+    \`\`\`tsx
+    <Presence present={open}>
+      <A.div an="enter:fade exit:fade duration-200">
+        <A.div an="enter:slide-up exit:slide-down duration-300 ease-spring-snappy">
+          Modal content
+        </A.div>
+      </A.div>
+    </Presence>
+    \`\`\`
+
+    ### Toast notification
+
+    \`\`\`tsx
+    <Presence present={visible}>
+      <A.div an="enter:fade-up exit:fade duration-240 ease-out">
+        {message}
+      </A.div>
+    </Presence>
+    \`\`\`
+
+    ### Interactive button
+
+    \`\`\`tsx
+    <A.button an="hover:lift press:compress">
+      Click me
+    </A.button>
+    \`\`\`
+
+    ### Card with hover effect
+
+    \`\`\`tsx
+    <A.div an="enter:fade-up hover:grow duration-300">
+      Card content
+    </A.div>
+    \`\`\`
 
     ## Manifest basics
 
