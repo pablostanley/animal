@@ -74,6 +74,7 @@ export type AnimalElementProps<TTag extends keyof React.JSX.IntrinsicElements> =
   React.JSX.IntrinsicElements[TTag] & {
   an?: string;
   initial?: boolean;
+  onAnimationComplete?: (phase: PresetPhase) => void;
 };
 
 export function createAnimalComponent<TTag extends keyof React.JSX.IntrinsicElements>(tag: TTag) {
@@ -83,6 +84,7 @@ export function createAnimalComponent<TTag extends keyof React.JSX.IntrinsicElem
     {
       an,
       initial = true,
+      onAnimationComplete,
       onPointerEnter,
       onPointerLeave,
       onPointerDown,
@@ -111,6 +113,9 @@ export function createAnimalComponent<TTag extends keyof React.JSX.IntrinsicElem
     const baseRef = React.useRef<MotionState | null>(null);
     const animationRef = React.useRef<Animation | null>(null);
 
+    const onAnimationCompleteRef = React.useRef(onAnimationComplete);
+    onAnimationCompleteRef.current = onAnimationComplete;
+
     const isFirstMountRef = React.useRef(true);
     const flagsRef = React.useRef({ hover: false, press: false, focus: false });
     const pressedPointerIdRef = React.useRef<number | null>(null);
@@ -134,7 +139,7 @@ export function createAnimalComponent<TTag extends keyof React.JSX.IntrinsicElem
     }, []);
 
     const animateTo = React.useCallback(
-      (to: MotionState, phaseOptions: ResolvedPhase["options"], affects: Affects) => {
+      (to: MotionState, phaseOptions: ResolvedPhase["options"], affects: Affects, phase?: PresetPhase) => {
         const el = localRef.current;
         if (!el) return;
 
@@ -159,6 +164,7 @@ export function createAnimalComponent<TTag extends keyof React.JSX.IntrinsicElem
         animation.finished
           .then(() => {
             applyStyles(el, to, affects);
+            if (phase) onAnimationCompleteRef.current?.(phase);
           })
           .catch(() => {
             // ignore cancellations
@@ -192,7 +198,7 @@ export function createAnimalComponent<TTag extends keyof React.JSX.IntrinsicElem
 
         const target = composeTarget(base, deltas);
         const affects = Array.from(affectsSet);
-        animateTo(target, phaseSpec.options, affects.length > 0 ? affects : ["transform"]);
+        animateTo(target, phaseSpec.options, affects.length > 0 ? affects : ["transform"], phase);
       },
       [animateTo, focus, hover, press]
     );
@@ -279,6 +285,7 @@ export function createAnimalComponent<TTag extends keyof React.JSX.IntrinsicElem
       animation.finished
         .then(() => {
           applyStyles(el, to, enter.affects);
+          onAnimationCompleteRef.current?.("enter");
         })
         .catch(() => {
           // ignore cancellations
@@ -317,6 +324,7 @@ export function createAnimalComponent<TTag extends keyof React.JSX.IntrinsicElem
       animation.finished
         .then(() => {
           applyStyles(el, to, exit.affects);
+          onAnimationCompleteRef.current?.("exit");
           reg.safeToRemove();
         })
         .catch(() => {
