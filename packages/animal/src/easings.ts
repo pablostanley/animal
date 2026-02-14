@@ -6,14 +6,15 @@ export type SpringParams = Readonly<{
   mass: number;
 }>;
 
-export const CSS_EASINGS: Readonly<Record<Exclude<EasingName, `spring-${SpringPresetName}`>, string>> =
-  Object.freeze({
-    linear: "linear",
-    ease: "ease",
-    "ease-in": "ease-in",
-    "ease-out": "ease-out",
-    "ease-in-out": "ease-in-out",
-  });
+export const CSS_EASINGS: Readonly<
+  Record<Exclude<EasingName, `spring-${SpringPresetName}` | `cubic-bezier(${string})`>, string>
+> = Object.freeze({
+  linear: "linear",
+  ease: "ease",
+  "ease-in": "ease-in",
+  "ease-out": "ease-out",
+  "ease-in-out": "ease-in-out",
+});
 
 export const SPRING_PRESETS: Readonly<Record<SpringPresetName, SpringParams>> = Object.freeze({
   // Roughly aligned to the feel of common UI spring defaults (snappy without being bouncy).
@@ -22,6 +23,10 @@ export const SPRING_PRESETS: Readonly<Record<SpringPresetName, SpringParams>> = 
   bouncy: { stiffness: 170, damping: 14, mass: 1 },
   strong: { stiffness: 520, damping: 44, mass: 1 },
 });
+
+export function isCubicBezier(easing: string): boolean {
+  return easing.startsWith("cubic-bezier(");
+}
 
 export function isSpringEasing(easing: string | undefined): easing is `spring-${SpringPresetName}` {
   if (typeof easing !== "string" || !easing.startsWith("spring-")) return false;

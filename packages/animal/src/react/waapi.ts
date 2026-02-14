@@ -176,6 +176,7 @@ export function animateBetween(
     return { animation, to };
   }
 
+  // cubic-bezier(...) strings pass through as valid CSS easing values for WAAPI.
   const easing = CSS_EASINGS[options.easing as keyof typeof CSS_EASINGS] ?? options.easing;
   const keyframes: Keyframe[] = [];
   const fromFrame: Keyframe = {};
