@@ -109,9 +109,9 @@ export function Presence({ present, children, onExitComplete }: PresenceProps) {
     return { safeToRemove, unregister };
   }, [tryFinalizeExit]);
 
-  if (!isMounted) return null;
-
   const value = React.useMemo(() => ({ isPresent, register }), [isPresent, register]);
+
+  if (!isMounted) return null;
 
   return (
     <PresenceContext.Provider value={value}>{children}</PresenceContext.Provider>
