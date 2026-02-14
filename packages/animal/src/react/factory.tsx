@@ -1,8 +1,8 @@
 import * as React from "react";
-import type { AnimalConfig, EasingName, MotionState, PartialMotionState, PhaseConfig, PresetPhase } from "../types";
+import type { AnimalConfig, EasingName, KeyframeStep, MotionState, PartialMotionState, PhaseConfig, PresetPhase } from "../types";
 import { parseAnimalTokens } from "../tokens";
 import { resolvePreset } from "../presets";
-import { applyDelta, applyStyles, animateBetween, readCurrentState } from "./waapi";
+import { applyDelta, applyStyles, animateBetween, animateKeyframes, interpolateState, readCurrentState } from "./waapi";
 import { useReducedMotion } from "./useReducedMotion";
 import { useIsomorphicLayoutEffect } from "./useIsomorphicLayoutEffect";
 import { usePresence } from "./Presence";
@@ -16,20 +16,22 @@ type ResolvedPhase = Readonly<{
   preset: string;
   fromDelta?: PartialMotionState;
   toDelta?: PartialMotionState;
+  keyframes?: readonly KeyframeStep[];
   affects: Affects;
-  options: Readonly<{ durationMs: number; delayMs: number; easing: EasingName }>;
+  options: Readonly<{ durationMs: number; delayMs: number; easing: EasingName; loop?: boolean | number }>;
 }>;
 
 function mergePhaseOptions(
   defaults: Readonly<{ durationMs: number; delayMs: number; easing: EasingName }>,
   global: AnimalConfig["options"] | undefined,
   local: PhaseConfig | undefined
-): Readonly<{ durationMs: number; delayMs: number; easing: EasingName }> {
+): Readonly<{ durationMs: number; delayMs: number; easing: EasingName; loop?: boolean | number }> {
   const localOpts = local?.options;
   return {
     durationMs: (localOpts?.duration ?? global?.duration ?? defaults.durationMs) as number,
     delayMs: (localOpts?.delay ?? global?.delay ?? defaults.delayMs) as number,
     easing: (localOpts?.easing ?? global?.easing ?? defaults.easing) as EasingName,
+    loop: localOpts?.loop ?? global?.loop,
   };
 }
 
@@ -48,6 +50,7 @@ function resolvePhase(config: AnimalConfig, phase: PresetPhase): ResolvedPhase |
     options: mergePhaseOptions(resolved.defaults, config.options, phaseConfig),
     ...(resolved.fromDelta !== undefined ? { fromDelta: resolved.fromDelta } : {}),
     ...(resolved.toDelta !== undefined ? { toDelta: resolved.toDelta } : {}),
+    ...(resolved.keyframes !== undefined ? { keyframes: resolved.keyframes } : {}),
   };
 }
 
@@ -292,6 +295,14 @@ export function createAnimalComponent<TTag extends keyof React.JSX.IntrinsicElem
         return;
       }
 
+      // If scroll-progress is enabled, set the element to "from" state and defer to scroll effect.
+      if (config.scrollProgress) {
+        const from = composeTarget(base, [enter.fromDelta]);
+        baseRef.current = to;
+        applyStyles(el, from, enter.affects);
+        return;
+      }
+
       const from = composeTarget(base, [enter.fromDelta]);
 
       if (reducedMotion || enter.options.durationMs <= 0) {
@@ -310,6 +321,22 @@ export function createAnimalComponent<TTag extends keyof React.JSX.IntrinsicElem
         ? { ...enter.options, delayMs: enter.options.delayMs + staggerDelay }
         : enter.options;
 
+      // Keyframe path: use animateKeyframes instead of animateBetween.
+      if (enter.keyframes) {
+        applyStyles(el, from, enter.affects);
+        const { animation } = animateKeyframes(el, enter.keyframes, base, enterOptions, enter.affects);
+        animationRef.current = animation;
+        animation.finished
+          .then(() => {
+            applyStyles(el, to, enter.affects);
+            onAnimationCompleteRef.current?.("enter");
+          })
+          .catch(() => {
+            // ignore cancellations
+          });
+        return;
+      }
+
       applyStyles(el, from, enter.affects);
       const { animation } = animateBetween(el, from, to, enterOptions, enter.affects);
       animationRef.current = animation;
@@ -321,7 +348,7 @@ export function createAnimalComponent<TTag extends keyof React.JSX.IntrinsicElem
         .catch(() => {
           // ignore cancellations
         });
-    }, [enter, initial, reducedMotion, stagger, config.inView]);
+    }, [enter, initial, reducedMotion, stagger, config.inView, config.scrollProgress]);
 
     // In-view: observe the element and trigger enter animation when visible.
     React.useEffect(() => {
@@ -370,6 +397,53 @@ export function createAnimalComponent<TTag extends keyof React.JSX.IntrinsicElem
       return () => observer.disconnect();
     }, [config.inView, enter, animateTo, stagger]);
 
+    // Scroll-progress: interpolate between "from" and "to" states based on scroll position.
+    React.useEffect(() => {
+      if (!config.scrollProgress || !enter) return;
+      const el = localRef.current;
+      const base = baseRef.current;
+      if (!el || !base) return;
+
+      if (typeof window === "undefined") return;
+
+      if (reducedMotion) {
+        const to = composeTarget(base, [enter.toDelta]);
+        applyStyles(el, to, enter.affects);
+        return;
+      }
+
+      const from = composeTarget(base, [enter.fromDelta]);
+      const to = composeTarget(base, [enter.toDelta]);
+      let rafId: number | null = null;
+
+      const update = () => {
+        const rect = el.getBoundingClientRect();
+        const vh = window.innerHeight;
+        const totalTravel = vh + rect.height;
+        const traveled = vh - rect.top;
+        let progress = traveled / totalTravel;
+        progress = Math.max(0, Math.min(1, progress));
+
+        const state = interpolateState(from, to, progress);
+        applyStyles(el, state, enter.affects);
+      };
+
+      const onScroll = () => {
+        if (rafId !== null) cancelAnimationFrame(rafId);
+        rafId = requestAnimationFrame(update);
+      };
+
+      window.addEventListener("scroll", onScroll, { passive: true });
+      window.addEventListener("resize", onScroll, { passive: true });
+      update();
+
+      return () => {
+        window.removeEventListener("scroll", onScroll);
+        window.removeEventListener("resize", onScroll);
+        if (rafId !== null) cancelAnimationFrame(rafId);
+      };
+    }, [config.scrollProgress, enter, reducedMotion]);
+
     // Exit animation (presence-aware).
     React.useEffect(() => {
       const el = localRef.current;
@@ -397,7 +471,25 @@ export function createAnimalComponent<TTag extends keyof React.JSX.IntrinsicElem
         return;
       }
 
-      const { animation } = animateBetween(el, from, to, exit.options, exit.affects);
+      // Exit never loops — it must complete to allow unmount.
+      const exitOptions = { ...exit.options, loop: undefined };
+
+      if (exit.keyframes) {
+        const { animation } = animateKeyframes(el, exit.keyframes, base, exitOptions, exit.affects);
+        animationRef.current = animation;
+        animation.finished
+          .then(() => {
+            applyStyles(el, to, exit.affects);
+            onAnimationCompleteRef.current?.("exit");
+            reg.safeToRemove();
+          })
+          .catch(() => {
+            reg.safeToRemove();
+          });
+        return;
+      }
+
+      const { animation } = animateBetween(el, from, to, exitOptions, exit.affects);
       animationRef.current = animation;
       animation.finished
         .then(() => {
