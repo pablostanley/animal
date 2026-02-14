@@ -7,6 +7,10 @@ type Affects = ReadonlyArray<"transform" | "opacity">;
 const clamp = (n: number, min: number, max: number) => Math.max(min, Math.min(max, n));
 const lerp = (a: number, b: number, t: number) => a + (b - a) * t;
 
+type WillChangeState = Readonly<{ base: string; token: number }>;
+const WILL_CHANGE_STATE = new WeakMap<HTMLElement, WillChangeState>();
+let WILL_CHANGE_TOKEN = 0;
+
 export function applyDelta(base: MotionState, delta: PartialMotionState | undefined): MotionState {
   if (!delta) return base;
   return {
@@ -128,8 +132,11 @@ export function animateBetween(
   }
 
   const willChange = affects.join(", ");
-  const prevWillChange = el.style.willChange;
-  el.style.willChange = prevWillChange ? `${prevWillChange}, ${willChange}` : willChange;
+  const currentState = WILL_CHANGE_STATE.get(el);
+  const baseWillChange = currentState?.base ?? el.style.willChange;
+  const token = (WILL_CHANGE_TOKEN += 1);
+  WILL_CHANGE_STATE.set(el, { base: baseWillChange, token });
+  el.style.willChange = baseWillChange ? `${baseWillChange}, ${willChange}` : willChange;
 
   const duration = Math.max(0, options.durationMs);
   const delay = Math.max(0, options.delayMs);
@@ -161,7 +168,10 @@ export function animateBetween(
 
     const animation = el.animate(keyframes, { duration, delay, easing: "linear", fill });
     animation.finished.finally(() => {
-      el.style.willChange = prevWillChange;
+      const state = WILL_CHANGE_STATE.get(el);
+      if (!state || state.token !== token) return;
+      el.style.willChange = state.base;
+      WILL_CHANGE_STATE.delete(el);
     });
     return { animation, to };
   }
@@ -184,7 +194,10 @@ export function animateBetween(
   keyframes.push(fromFrame, toFrame);
   const animation = el.animate(keyframes, { duration, delay, easing, fill });
   animation.finished.finally(() => {
-    el.style.willChange = prevWillChange;
+    const state = WILL_CHANGE_STATE.get(el);
+    if (!state || state.token !== token) return;
+    el.style.willChange = state.base;
+    WILL_CHANGE_STATE.delete(el);
   });
   return { animation, to };
 }
