@@ -18,14 +18,14 @@ export function Demo() {
         <div className="flex items-center gap-3">
           <button
             type="button"
-            className="h-10 rounded-md border border-black/10 bg-black/5 px-4 text-sm text-black/70 hover:bg-black/10 dark:border-white/10 dark:bg-white/5 dark:text-white/80 dark:hover:bg-white/10"
+            className="h-10 rounded-md border border-black/10 bg-black/5 px-4 text-sm text-black/70 hover:bg-black/10 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-black/30 focus-visible:ring-offset-2 focus-visible:ring-offset-[var(--background)] dark:border-white/10 dark:bg-white/5 dark:text-white/80 dark:hover:bg-white/10 dark:focus-visible:ring-white/30"
             onClick={() => setOpen((v) => !v)}
           >
             Toggle modal
           </button>
           <A.button
             an="hover:lift press:compress duration-180 ease-out"
-            className="h-10 rounded-md bg-white px-4 text-sm font-medium text-black"
+            className="h-10 rounded-md bg-white px-4 text-sm font-medium text-black focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-black/30 focus-visible:ring-offset-2 focus-visible:ring-offset-[var(--background)] dark:focus-visible:ring-white/30"
             type="button"
           >
             Button
@@ -68,7 +68,7 @@ export function Demo() {
             </div>
             <button
               type="button"
-              className="h-9 rounded-md border border-black/10 bg-black/5 px-3 text-sm text-black/70 hover:bg-black/10 dark:border-white/10 dark:bg-white/5 dark:text-white/80 dark:hover:bg-white/10"
+              className="h-9 rounded-md border border-black/10 bg-black/5 px-3 text-sm text-black/70 hover:bg-black/10 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-black/30 focus-visible:ring-offset-2 focus-visible:ring-offset-[var(--background)] dark:border-white/10 dark:bg-white/5 dark:text-white/80 dark:hover:bg-white/10 dark:focus-visible:ring-white/30"
               onClick={() => setOpen(false)}
             >
               Close

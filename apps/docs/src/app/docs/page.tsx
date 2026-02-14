@@ -14,23 +14,26 @@ export default function DocsHomePage() {
       <div className="mt-6 flex flex-col gap-3 sm:flex-row sm:items-center">
         <Link
           href="/docs/presets"
-          className="inline-flex h-10 items-center justify-center rounded-md bg-black px-4 text-sm font-medium text-white dark:bg-white dark:text-black"
+          className="inline-flex h-10 items-center justify-center rounded-md bg-black px-4 text-sm font-medium text-white focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-black/30 focus-visible:ring-offset-2 focus-visible:ring-offset-[var(--background)] dark:bg-white dark:text-black dark:focus-visible:ring-white/30"
         >
           Presets
         </Link>
         <Link
           href="/docs/api"
-          className="inline-flex h-10 items-center justify-center rounded-md border border-black/10 bg-black/5 px-4 text-sm font-medium text-black/70 hover:bg-black/10 dark:border-white/10 dark:bg-white/5 dark:text-white/80 dark:hover:bg-white/10"
+          className="inline-flex h-10 items-center justify-center rounded-md border border-black/10 bg-black/5 px-4 text-sm font-medium text-black/70 hover:bg-black/10 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-black/30 focus-visible:ring-offset-2 focus-visible:ring-offset-[var(--background)] dark:border-white/10 dark:bg-white/5 dark:text-white/80 dark:hover:bg-white/10 dark:focus-visible:ring-white/30"
         >
           API
         </Link>
         <Link
           href="/docs/manifest"
-          className="inline-flex h-10 items-center justify-center rounded-md border border-black/10 bg-black/5 px-4 text-sm font-medium text-black/70 hover:bg-black/10 dark:border-white/10 dark:bg-white/5 dark:text-white/80 dark:hover:bg-white/10"
+          className="inline-flex h-10 items-center justify-center rounded-md border border-black/10 bg-black/5 px-4 text-sm font-medium text-black/70 hover:bg-black/10 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-black/30 focus-visible:ring-offset-2 focus-visible:ring-offset-[var(--background)] dark:border-white/10 dark:bg-white/5 dark:text-white/80 dark:hover:bg-white/10 dark:focus-visible:ring-white/30"
         >
           Agent manifest
         </Link>
-        <Link href="/manifest.json" className="text-sm text-black/50 hover:text-black dark:text-white/50 dark:hover:text-white">
+        <Link
+          href="/manifest.json"
+          className="rounded-md text-sm text-black/50 hover:text-black focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-black/30 focus-visible:ring-offset-2 focus-visible:ring-offset-[var(--background)] dark:text-white/50 dark:hover:text-white dark:focus-visible:ring-white/30"
+        >
           /manifest.json
         </Link>
       </div>
