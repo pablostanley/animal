@@ -1,4 +1,5 @@
 export { ANIMAL_MANIFEST } from "./manifest";
+export { ANIMAL_MANIFEST_SCHEMA } from "./manifest-schema";
 export { parseAnimalTokens } from "./tokens";
 export { validate } from "./validate";
 export { isKnownPreset, resolvePreset } from "./presets";
