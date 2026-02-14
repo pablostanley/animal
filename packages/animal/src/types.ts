@@ -69,6 +69,7 @@ export type PresetManifestItem = {
     easing: EasingName;
   };
   affects: Array<"transform" | "opacity">;
+  codeExample: string;
 };
 
 export type AnimalManifest = {

@@ -271,6 +271,13 @@ export const PRESETS: readonly PresetSpec[] = [
   },
 ] as const;
 
+function generateCodeExample(phase: string, name: string): string {
+  if (phase === "enter" || phase === "exit") {
+    return `<Presence present={open}>\n  <A.div an="${phase}:${name}">\n    Content\n  </A.div>\n</Presence>`;
+  }
+  return `<A.button an="${phase}:${name}">Click me</A.button>`;
+}
+
 export function getPresetManifestItems(): PresetManifestItem[] {
   return PRESETS.map((p) => ({
     phase: p.phase,
@@ -280,6 +287,7 @@ export function getPresetManifestItems(): PresetManifestItem[] {
     params: p.params,
     defaults: p.defaults,
     affects: p.affects,
+    codeExample: generateCodeExample(p.phase, p.name),
   }));
 }
 
