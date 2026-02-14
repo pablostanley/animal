@@ -3,6 +3,7 @@
 import * as React from "react";
 import { ANIMAL_MANIFEST } from "@vercel/animal";
 import { PresetPreview } from "../../../components/PresetPreview";
+import { CopyButton } from "../../../components/CopyButton";
 
 type PresetItem = (typeof ANIMAL_MANIFEST.presets)[number];
 
@@ -144,9 +145,12 @@ export default function PresetsPage() {
 
             {/* Code example */}
             <div className="mt-4 rounded-xl border border-black/10 bg-black/[0.03] p-3 dark:border-white/10 dark:bg-white/[0.03]">
-              <pre className="overflow-auto text-xs text-black/60 dark:text-white/60">
-                <code>{selected.codeExample}</code>
-              </pre>
+              <div className="flex items-start justify-between gap-2">
+                <pre className="min-w-0 flex-1 overflow-auto text-xs text-black/60 dark:text-white/60">
+                  <code>{selected.codeExample}</code>
+                </pre>
+                <CopyButton text={selected.codeExample} />
+              </div>
             </div>
           </div>
         </div>

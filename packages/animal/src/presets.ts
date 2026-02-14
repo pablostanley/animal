@@ -82,7 +82,7 @@ export const PRESETS: readonly PresetSpec[] = [
     description: "Slide in from the right.",
     affects: ["transform"],
     defaults: ENTER_DEFAULTS,
-    params: { x: pxParam(12, "Initial X offset (positive starts right, moves left).") },
+    params: { x: pxParam(16, "Initial X offset (positive starts right, moves left).") },
     resolve: (p) => ({ fromDelta: { x: p.x }, toDelta: {} }),
   },
   {
@@ -91,7 +91,7 @@ export const PRESETS: readonly PresetSpec[] = [
     description: "Slide in from the left.",
     affects: ["transform"],
     defaults: ENTER_DEFAULTS,
-    params: { x: pxParam(12, "Initial X offset (positive starts left, moves right).") },
+    params: { x: pxParam(16, "Initial X offset (positive starts left, moves right).") },
     resolve: (p) => ({ fromDelta: { x: -p.x }, toDelta: {} }),
   },
   {
@@ -100,7 +100,7 @@ export const PRESETS: readonly PresetSpec[] = [
     description: "Slide in from below.",
     affects: ["transform"],
     defaults: ENTER_DEFAULTS,
-    params: { y: pxParam(12, "Initial Y offset (positive starts below, moves up).") },
+    params: { y: pxParam(16, "Initial Y offset (positive starts below, moves up).") },
     resolve: (p) => ({ fromDelta: { y: p.y }, toDelta: {} }),
   },
   {
@@ -109,7 +109,7 @@ export const PRESETS: readonly PresetSpec[] = [
     description: "Slide in from above.",
     affects: ["transform"],
     defaults: ENTER_DEFAULTS,
-    params: { y: pxParam(12, "Initial Y offset (positive starts above, moves down).") },
+    params: { y: pxParam(16, "Initial Y offset (positive starts above, moves down).") },
     resolve: (p) => ({ fromDelta: { y: -p.y }, toDelta: {} }),
   },
   {
@@ -118,7 +118,7 @@ export const PRESETS: readonly PresetSpec[] = [
     description: "Fade in while moving up.",
     affects: ["opacity", "transform"],
     defaults: ENTER_DEFAULTS,
-    params: { y: pxParam(12, "Initial Y offset (positive starts below, moves up).") },
+    params: { y: pxParam(16, "Initial Y offset (positive starts below, moves up).") },
     resolve: (p) => ({ fromDelta: { opacity: -1, y: p.y }, toDelta: {} }),
   },
   {
@@ -127,7 +127,7 @@ export const PRESETS: readonly PresetSpec[] = [
     description: "Fade in while moving down.",
     affects: ["opacity", "transform"],
     defaults: ENTER_DEFAULTS,
-    params: { y: pxParam(12, "Initial Y offset (positive starts above, moves down).") },
+    params: { y: pxParam(16, "Initial Y offset (positive starts above, moves down).") },
     resolve: (p) => ({ fromDelta: { opacity: -1, y: -p.y }, toDelta: {} }),
   },
   {
@@ -136,7 +136,7 @@ export const PRESETS: readonly PresetSpec[] = [
     description: "Fade in while moving left.",
     affects: ["opacity", "transform"],
     defaults: ENTER_DEFAULTS,
-    params: { x: pxParam(12, "Initial X offset (positive starts right, moves left).") },
+    params: { x: pxParam(16, "Initial X offset (positive starts right, moves left).") },
     resolve: (p) => ({ fromDelta: { opacity: -1, x: p.x }, toDelta: {} }),
   },
   {
@@ -145,7 +145,7 @@ export const PRESETS: readonly PresetSpec[] = [
     description: "Fade in while moving right.",
     affects: ["opacity", "transform"],
     defaults: ENTER_DEFAULTS,
-    params: { x: pxParam(12, "Initial X offset (positive starts left, moves right).") },
+    params: { x: pxParam(16, "Initial X offset (positive starts left, moves right).") },
     resolve: (p) => ({ fromDelta: { opacity: -1, x: -p.x }, toDelta: {} }),
   },
   {
@@ -154,7 +154,7 @@ export const PRESETS: readonly PresetSpec[] = [
     description: "Fade and scale in (subtle pop).",
     affects: ["opacity", "transform"],
     defaults: ENTER_DEFAULTS,
-    params: { scale: scaleParam(0.96, "Initial scale.") },
+    params: { scale: scaleParam(0.9, "Initial scale.") },
     resolve: (p) => ({ fromDelta: { opacity: -1, scale: p.scale - 1 }, toDelta: {} }),
   },
   {
@@ -163,7 +163,7 @@ export const PRESETS: readonly PresetSpec[] = [
     description: "Scale in.",
     affects: ["transform"],
     defaults: ENTER_DEFAULTS,
-    params: { scale: scaleParam(0.96, "Initial scale.") },
+    params: { scale: scaleParam(0.9, "Initial scale.") },
     resolve: (p) => ({ fromDelta: { scale: p.scale - 1 }, toDelta: {} }),
   },
   {
@@ -230,7 +230,7 @@ export const PRESETS: readonly PresetSpec[] = [
     description: "Slide out to the left.",
     affects: ["transform"],
     defaults: EXIT_DEFAULTS,
-    params: { x: pxParam(12, "Final X offset (positive moves left).") },
+    params: { x: pxParam(16, "Final X offset (positive moves left).") },
     resolve: (p) => ({ fromDelta: {}, toDelta: { x: -p.x } }),
   },
   {
@@ -239,7 +239,7 @@ export const PRESETS: readonly PresetSpec[] = [
     description: "Slide out to the right.",
     affects: ["transform"],
     defaults: EXIT_DEFAULTS,
-    params: { x: pxParam(12, "Final X offset (positive moves right).") },
+    params: { x: pxParam(16, "Final X offset (positive moves right).") },
     resolve: (p) => ({ fromDelta: {}, toDelta: { x: p.x } }),
   },
   {
@@ -248,7 +248,7 @@ export const PRESETS: readonly PresetSpec[] = [
     description: "Slide out up.",
     affects: ["transform"],
     defaults: EXIT_DEFAULTS,
-    params: { y: pxParam(12, "Final Y offset (positive moves up).") },
+    params: { y: pxParam(16, "Final Y offset (positive moves up).") },
     resolve: (p) => ({ fromDelta: {}, toDelta: { y: -p.y } }),
   },
   {
@@ -257,7 +257,7 @@ export const PRESETS: readonly PresetSpec[] = [
     description: "Slide out down.",
     affects: ["transform"],
     defaults: EXIT_DEFAULTS,
-    params: { y: pxParam(12, "Final Y offset (positive moves down).") },
+    params: { y: pxParam(16, "Final Y offset (positive moves down).") },
     resolve: (p) => ({ fromDelta: {}, toDelta: { y: p.y } }),
   },
   {
@@ -266,7 +266,7 @@ export const PRESETS: readonly PresetSpec[] = [
     description: "Fade out while moving up.",
     affects: ["opacity", "transform"],
     defaults: EXIT_DEFAULTS,
-    params: { y: pxParam(12, "Final Y offset (positive moves up).") },
+    params: { y: pxParam(16, "Final Y offset (positive moves up).") },
     resolve: (p) => ({ fromDelta: {}, toDelta: { opacity: -1, y: -p.y } }),
   },
   {
@@ -275,7 +275,7 @@ export const PRESETS: readonly PresetSpec[] = [
     description: "Fade out while moving down.",
     affects: ["opacity", "transform"],
     defaults: EXIT_DEFAULTS,
-    params: { y: pxParam(12, "Final Y offset (positive moves down).") },
+    params: { y: pxParam(16, "Final Y offset (positive moves down).") },
     resolve: (p) => ({ fromDelta: {}, toDelta: { opacity: -1, y: p.y } }),
   },
   {
@@ -284,7 +284,7 @@ export const PRESETS: readonly PresetSpec[] = [
     description: "Fade out while moving left.",
     affects: ["opacity", "transform"],
     defaults: EXIT_DEFAULTS,
-    params: { x: pxParam(12, "Final X offset (positive moves left).") },
+    params: { x: pxParam(16, "Final X offset (positive moves left).") },
     resolve: (p) => ({ toDelta: { opacity: -1, x: -p.x } }),
   },
   {
@@ -293,7 +293,7 @@ export const PRESETS: readonly PresetSpec[] = [
     description: "Fade out while moving right.",
     affects: ["opacity", "transform"],
     defaults: EXIT_DEFAULTS,
-    params: { x: pxParam(12, "Final X offset (positive moves right).") },
+    params: { x: pxParam(16, "Final X offset (positive moves right).") },
     resolve: (p) => ({ toDelta: { opacity: -1, x: p.x } }),
   },
   {
@@ -302,7 +302,7 @@ export const PRESETS: readonly PresetSpec[] = [
     description: "Fade and scale out (shrink).",
     affects: ["opacity", "transform"],
     defaults: EXIT_DEFAULTS,
-    params: { scale: scaleParam(0.96, "Final scale.") },
+    params: { scale: scaleParam(0.9, "Final scale.") },
     resolve: (p) => ({ toDelta: { opacity: -1, scale: p.scale - 1 } }),
   },
   {
@@ -311,7 +311,7 @@ export const PRESETS: readonly PresetSpec[] = [
     description: "Scale out.",
     affects: ["transform"],
     defaults: EXIT_DEFAULTS,
-    params: { scale: scaleParam(0.96, "Final scale.") },
+    params: { scale: scaleParam(0.9, "Final scale.") },
     resolve: (p) => ({ toDelta: { scale: p.scale - 1 } }),
   },
   {
@@ -335,7 +335,7 @@ export const PRESETS: readonly PresetSpec[] = [
     description: "Lift slightly on hover.",
     affects: ["transform"],
     defaults: HOVER_DEFAULTS,
-    params: { y: pxParam(4, "Lift distance (positive lifts up).") },
+    params: { y: pxParam(6, "Lift distance (positive lifts up).") },
     resolve: (p) => ({ fromDelta: {}, toDelta: { y: -p.y } }),
   },
   {
@@ -344,7 +344,7 @@ export const PRESETS: readonly PresetSpec[] = [
     description: "Scale up slightly on hover.",
     affects: ["transform"],
     defaults: HOVER_DEFAULTS,
-    params: { scale: scaleParam(1.02, "Hover scale.") },
+    params: { scale: scaleParam(1.05, "Hover scale.") },
     resolve: (p) => ({ fromDelta: {}, toDelta: { scale: p.scale - 1 } }),
   },
   {
@@ -353,7 +353,7 @@ export const PRESETS: readonly PresetSpec[] = [
     description: "Scale down slightly on hover.",
     affects: ["transform"],
     defaults: HOVER_DEFAULTS,
-    params: { scale: scaleParam(0.98, "Hover scale.") },
+    params: { scale: scaleParam(0.95, "Hover scale.") },
     resolve: (p) => ({ toDelta: { scale: p.scale - 1 } }),
   },
   // Press
@@ -363,7 +363,7 @@ export const PRESETS: readonly PresetSpec[] = [
     description: "Scale down slightly on press.",
     affects: ["transform"],
     defaults: PRESS_DEFAULTS,
-    params: { scale: scaleParam(0.98, "Press scale.") },
+    params: { scale: scaleParam(0.95, "Press scale.") },
     resolve: (p) => ({ fromDelta: {}, toDelta: { scale: p.scale - 1 } }),
   },
   {
@@ -372,7 +372,7 @@ export const PRESETS: readonly PresetSpec[] = [
     description: "Push down slightly on press.",
     affects: ["transform"],
     defaults: PRESS_DEFAULTS,
-    params: { y: pxParam(2, "Push distance (positive pushes down).") },
+    params: { y: pxParam(3, "Push distance (positive pushes down).") },
     resolve: (p) => ({ toDelta: { y: p.y } }),
   },
   // Focus
@@ -382,7 +382,7 @@ export const PRESETS: readonly PresetSpec[] = [
     description: "Lift slightly on focus.",
     affects: ["transform"],
     defaults: FOCUS_DEFAULTS,
-    params: { y: pxParam(2, "Lift distance (positive lifts up).") },
+    params: { y: pxParam(3, "Lift distance (positive lifts up).") },
     resolve: (p) => ({ fromDelta: {}, toDelta: { y: -p.y } }),
   },
 ] as const;

@@ -2,23 +2,32 @@
 
 import * as React from "react";
 import { A, Presence, Stagger } from "@vercel/animal/react";
+import { CopyButton } from "./CopyButton";
 
 function DemoCard({
   label,
   token,
+  action,
   children,
 }: {
   label: string;
   token: string;
+  action?: React.ReactNode;
   children: React.ReactNode;
 }) {
   return (
     <div className="flex flex-col gap-3 rounded-2xl border border-black/10 bg-black/[0.03] p-5 dark:border-white/10 dark:bg-white/[0.03]">
-      <p className="text-xs font-medium text-black/70 dark:text-white/70">{label}</p>
+      <div className="flex items-center justify-between">
+        <p className="text-xs font-medium text-black/70 dark:text-white/70">{label}</p>
+        {action}
+      </div>
       <div className="flex min-h-[120px] items-center justify-center">{children}</div>
-      <code className="self-start rounded-lg bg-black/5 px-2.5 py-1.5 font-mono text-[11px] text-black/50 dark:bg-white/10 dark:text-white/50">
-        {token}
-      </code>
+      <div className="flex items-center gap-1">
+        <code className="rounded-lg bg-black/5 px-2.5 py-1.5 font-mono text-[11px] text-black/50 dark:bg-white/10 dark:text-white/50">
+          {token}
+        </code>
+        <CopyButton text={token} />
+      </div>
     </div>
   );
 }
@@ -27,16 +36,10 @@ function PresenceDemo() {
   const [open, setOpen] = React.useState(true);
 
   return (
-    <DemoCard label="Presence" token='an="enter:fade-up exit:fade-down"'>
-      <div className="flex flex-col items-center gap-3">
-        <div className="relative h-16 w-16">
-          <Presence present={open}>
-            <A.div
-              an="enter:fade-up exit:fade-down duration-300 ease-spring-snappy"
-              className="absolute inset-0 rounded-2xl bg-gradient-to-br from-black to-black/80 shadow-lg dark:from-white dark:to-white/80"
-            />
-          </Presence>
-        </div>
+    <DemoCard
+      label="Presence"
+      token='an="enter:fade-up exit:fade-down"'
+      action={
         <button
           type="button"
           onClick={() => setOpen((v) => !v)}
@@ -44,6 +47,15 @@ function PresenceDemo() {
         >
           {open ? "Exit" : "Enter"}
         </button>
+      }
+    >
+      <div className="relative h-16 w-16">
+        <Presence present={open}>
+          <A.div
+            an="enter:fade-up exit:fade-down duration-400 ease-spring-snappy y-28"
+            className="absolute inset-0 rounded-2xl bg-gradient-to-br from-black to-black/80 shadow-lg dark:from-white dark:to-white/80"
+          />
+        </Presence>
       </div>
     </DemoCard>
   );
@@ -53,7 +65,7 @@ function InteractionDemo() {
   return (
     <DemoCard label="Hover + Press" token='an="hover:grow press:compress"'>
       <A.button
-        an="hover:grow press:compress duration-180 ease-out"
+        an="hover:grow press:compress duration-200 ease-out hover:scale-1.12 press:scale-0.88"
         className="h-16 w-16 rounded-2xl bg-gradient-to-br from-black to-black/80 shadow-lg focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-black/30 dark:from-white dark:to-white/80 dark:focus-visible:ring-white/30"
         type="button"
         aria-label="Interactive demo"
@@ -66,13 +78,10 @@ function BounceDemo() {
   const [nonce, setNonce] = React.useState(0);
 
   return (
-    <DemoCard label="Keyframe" token='an="enter:bounce-in"'>
-      <div className="flex flex-col items-center gap-3">
-        <A.div
-          key={nonce}
-          an="enter:bounce-in"
-          className="h-16 w-16 rounded-2xl bg-gradient-to-br from-black to-black/80 shadow-lg dark:from-white dark:to-white/80"
-        />
+    <DemoCard
+      label="Keyframe"
+      token='an="enter:bounce-in"'
+      action={
         <button
           type="button"
           onClick={() => setNonce((n) => n + 1)}
@@ -80,7 +89,13 @@ function BounceDemo() {
         >
           Replay
         </button>
-      </div>
+      }
+    >
+      <A.div
+        key={nonce}
+        an="enter:bounce-in y-32"
+        className="h-16 w-16 rounded-2xl bg-gradient-to-br from-black to-black/80 shadow-lg dark:from-white dark:to-white/80"
+      />
     </DemoCard>
   );
 }
@@ -89,19 +104,10 @@ function StaggerDemo() {
   const [nonce, setNonce] = React.useState(0);
 
   return (
-    <DemoCard label="Stagger" token='<Stagger stagger={60}>'>
-      <div className="flex flex-col items-center gap-3">
-        <Stagger stagger={60} key={nonce}>
-          <div className="flex gap-2">
-            {[0, 1, 2, 3].map((i) => (
-              <A.div
-                key={i}
-                an="enter:fade-up ease-spring-snappy"
-                className="h-10 w-10 rounded-xl bg-gradient-to-br from-black to-black/80 shadow-md dark:from-white dark:to-white/80"
-              />
-            ))}
-          </div>
-        </Stagger>
+    <DemoCard
+      label="Stagger"
+      token="<Stagger stagger={60}>"
+      action={
         <button
           type="button"
           onClick={() => setNonce((n) => n + 1)}
@@ -109,7 +115,19 @@ function StaggerDemo() {
         >
           Replay
         </button>
-      </div>
+      }
+    >
+      <Stagger stagger={60} key={nonce}>
+        <div className="flex gap-2">
+          {[0, 1, 2, 3].map((i) => (
+            <A.div
+              key={i}
+              an="enter:fade-up ease-spring-snappy y-24"
+              className="h-10 w-10 rounded-xl bg-gradient-to-br from-black to-black/80 shadow-md dark:from-white dark:to-white/80"
+            />
+          ))}
+        </div>
+      </Stagger>
     </DemoCard>
   );
 }

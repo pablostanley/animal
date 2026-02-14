@@ -25,26 +25,26 @@ describe("presets", () => {
     const preset = resolvePreset("exit", "fade-left", {});
     expect(preset).not.toBeNull();
     expect(preset?.toDelta?.opacity).toBe(-1);
-    expect(preset?.toDelta?.x).toBe(-12);
+    expect(preset?.toDelta?.x).toBe(-16);
   });
 
   it("resolves exit:pop preset", () => {
     const preset = resolvePreset("exit", "pop", {});
     expect(preset).not.toBeNull();
     expect(preset?.toDelta?.opacity).toBe(-1);
-    expect(preset?.toDelta?.scale).toBe(0.96 - 1);
+    expect(preset?.toDelta?.scale).toBe(0.9 - 1);
   });
 
   it("resolves hover:shrink preset", () => {
     const preset = resolvePreset("hover", "shrink", {});
     expect(preset).not.toBeNull();
-    expect(preset?.toDelta?.scale).toBe(0.98 - 1);
+    expect(preset?.toDelta?.scale).toBe(0.95 - 1);
   });
 
   it("resolves press:push preset", () => {
     const preset = resolvePreset("press", "push", {});
     expect(preset).not.toBeNull();
-    expect(preset?.toDelta?.y).toBe(2);
+    expect(preset?.toDelta?.y).toBe(3);
   });
 
   it("resolves enter:bounce-in as keyframe preset", () => {
