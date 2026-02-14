@@ -20,6 +20,7 @@ export function GET() {
     ## Where to start
 
     - Docs: /docs
+    - API: /docs/api
     - Presets: /docs/presets
     - Manifest viewer: /docs/manifest
     - Machine-readable manifest: /manifest.json
