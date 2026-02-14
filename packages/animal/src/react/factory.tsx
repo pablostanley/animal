@@ -7,6 +7,7 @@ import { useReducedMotion } from "./useReducedMotion";
 import { usePresence } from "./Presence";
 
 type Affects = ReadonlyArray<"transform" | "opacity">;
+type PresenceRegistration = Readonly<{ safeToRemove: () => void; unregister: () => void }>;
 
 type ResolvedPhase = Readonly<{
   phase: PresetPhase;
@@ -93,6 +94,7 @@ export function createAnimalComponent<TTag extends keyof React.JSX.IntrinsicElem
   ) {
     const localRef = React.useRef<HTMLElement | null>(null);
     const presence = usePresence();
+    const presenceRegistrationRef = React.useRef<PresenceRegistration | null>(null);
 
     const config = React.useMemo(() => parseAnimalTokens(an), [an]);
     const reducedMotion = useReducedMotion(config.options?.reducedMotion);
@@ -211,6 +213,18 @@ export function createAnimalComponent<TTag extends keyof React.JSX.IntrinsicElem
       [press, setInteraction]
     );
 
+    // Register with a Presence boundary once per mount so Presence can wait for all exiting children.
+    const registerPresence = presence?.register;
+    React.useEffect(() => {
+      if (!registerPresence) return;
+      const reg = registerPresence();
+      presenceRegistrationRef.current = reg;
+      return () => {
+        reg.unregister();
+        presenceRegistrationRef.current = null;
+      };
+    }, [registerPresence]);
+
     // Enter animation: run before paint to prevent flicker.
     React.useLayoutEffect(() => {
       const el = localRef.current;
@@ -251,8 +265,11 @@ export function createAnimalComponent<TTag extends keyof React.JSX.IntrinsicElem
 
       if (presence.isPresent) return;
 
+      const reg = presenceRegistrationRef.current;
+      if (!reg) return;
+
       if (!exit) {
-        presence.safeToRemove();
+        reg.safeToRemove();
         return;
       }
 
@@ -263,7 +280,7 @@ export function createAnimalComponent<TTag extends keyof React.JSX.IntrinsicElem
 
       if (reducedMotion || exit.options.durationMs <= 0) {
         applyStyles(el, to, exit.affects);
-        presence.safeToRemove();
+        reg.safeToRemove();
         return;
       }
 
@@ -272,10 +289,10 @@ export function createAnimalComponent<TTag extends keyof React.JSX.IntrinsicElem
       animation.finished
         .then(() => {
           applyStyles(el, to, exit.affects);
-          presence.safeToRemove();
+          reg.safeToRemove();
         })
         .catch(() => {
-          presence.safeToRemove();
+          reg.safeToRemove();
         });
     }, [exit, presence, reducedMotion, stopAnimation]);
 
