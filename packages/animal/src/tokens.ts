@@ -63,7 +63,14 @@ function normalizeEasingToken(token: string): EasingName | null {
   if (raw === "in") return "ease-in";
   if (raw === "out") return "ease-out";
   if (raw === "in-out") return "ease-in-out";
-  if (raw.startsWith("spring-")) return raw as EasingName;
+  if (raw.startsWith("spring-")) {
+    const preset = raw.slice("spring-".length);
+    if (preset === "default") return raw as EasingName;
+    if (preset === "snappy") return raw as EasingName;
+    if (preset === "bouncy") return raw as EasingName;
+    if (preset === "strong") return raw as EasingName;
+    return null;
+  }
 
   return null;
 }

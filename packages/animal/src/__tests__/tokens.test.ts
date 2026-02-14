@@ -16,6 +16,13 @@ describe("parseAnimalTokens()", () => {
     expect(config.options?.easing).toBe("ease");
   });
 
+  it("treats unknown spring easings as unknown tokens", () => {
+    const config = parseAnimalTokens("fade ease-spring-typo");
+    expect(config.enter?.preset).toBe("fade");
+    expect(config.options?.easing).toBeUndefined();
+    expect(config.unknownTokens).toEqual(["ease-spring-typo"]);
+  });
+
   it("parses phase-scoped presets and options", () => {
     const config = parseAnimalTokens("hover:lift hover:duration-100 press:compress press:delay-0");
     expect(config.hover?.preset).toBe("lift");
