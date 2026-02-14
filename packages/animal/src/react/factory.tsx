@@ -6,6 +6,7 @@ import { applyDelta, applyStyles, animateBetween, readCurrentState } from "./waa
 import { useReducedMotion } from "./useReducedMotion";
 import { useIsomorphicLayoutEffect } from "./useIsomorphicLayoutEffect";
 import { usePresence } from "./Presence";
+import { useStagger } from "./Stagger";
 
 type Affects = ReadonlyArray<"transform" | "opacity">;
 type PresenceRegistration = Readonly<{ safeToRemove: () => void; unregister: () => void }>;
@@ -100,6 +101,9 @@ export function createAnimalComponent<TTag extends keyof React.JSX.IntrinsicElem
     const localRef = React.useRef<HTMLElement | null>(null);
     const presence = usePresence();
     const presenceRegistrationRef = React.useRef<PresenceRegistration | null>(null);
+    const stagger = useStagger();
+    const staggerIndexRef = React.useRef(-1);
+    const inViewFiredRef = React.useRef(false);
 
     const config = React.useMemo(() => parseAnimalTokens(an), [an]);
     const reducedMotion = useReducedMotion(config.options?.reducedMotion);
@@ -263,6 +267,11 @@ export function createAnimalComponent<TTag extends keyof React.JSX.IntrinsicElem
 
       if (!enter) return;
 
+      // Claim a stagger index if inside a Stagger context.
+      if (stagger && staggerIndexRef.current === -1) {
+        staggerIndexRef.current = stagger.claimIndex();
+      }
+
       // Skip the enter animation on first mount when initial is false.
       const skipEnter = !initial && isFirstMountRef.current;
       isFirstMountRef.current = false;
@@ -272,6 +281,14 @@ export function createAnimalComponent<TTag extends keyof React.JSX.IntrinsicElem
       if (skipEnter) {
         applyStyles(el, to, enter.affects);
         baseRef.current = to;
+        return;
+      }
+
+      // If in-view is enabled, set the element to "from" state and defer animation.
+      if (config.inView) {
+        const from = composeTarget(base, [enter.fromDelta]);
+        baseRef.current = to;
+        applyStyles(el, from, enter.affects);
         return;
       }
 
@@ -286,8 +303,15 @@ export function createAnimalComponent<TTag extends keyof React.JSX.IntrinsicElem
       // Set base to the enter target immediately so interactions compose correctly.
       baseRef.current = to;
 
+      // Add stagger delay when inside a Stagger context.
+      const staggerDelay = stagger && staggerIndexRef.current >= 0
+        ? staggerIndexRef.current * stagger.staggerMs : 0;
+      const enterOptions = staggerDelay > 0
+        ? { ...enter.options, delayMs: enter.options.delayMs + staggerDelay }
+        : enter.options;
+
       applyStyles(el, from, enter.affects);
-      const { animation } = animateBetween(el, from, to, enter.options, enter.affects);
+      const { animation } = animateBetween(el, from, to, enterOptions, enter.affects);
       animationRef.current = animation;
       animation.finished
         .then(() => {
@@ -297,7 +321,54 @@ export function createAnimalComponent<TTag extends keyof React.JSX.IntrinsicElem
         .catch(() => {
           // ignore cancellations
         });
-    }, [enter, initial, reducedMotion]);
+    }, [enter, initial, reducedMotion, stagger, config.inView]);
+
+    // In-view: observe the element and trigger enter animation when visible.
+    React.useEffect(() => {
+      if (!config.inView || !enter) return;
+      if (inViewFiredRef.current) return;
+      const el = localRef.current;
+      if (!el) return;
+
+      if (typeof IntersectionObserver === "undefined") {
+        // SSR fallback: animate immediately.
+        inViewFiredRef.current = true;
+        const base = baseRef.current;
+        if (!base) return;
+        const to = composeTarget(base, [enter.toDelta]);
+        animateTo(to, enter.options, enter.affects, "enter");
+        return;
+      }
+
+      const inViewConfig = typeof config.inView === "object" ? config.inView : {};
+      const threshold = inViewConfig.threshold ?? 0.1;
+      const rootMargin = inViewConfig.rootMargin ?? "0px";
+      const once = inViewConfig.once !== false; // default true
+
+      // Add stagger delay when inside a Stagger context.
+      const staggerDelay = stagger && staggerIndexRef.current >= 0
+        ? staggerIndexRef.current * stagger.staggerMs : 0;
+      const enterOptions = staggerDelay > 0
+        ? { ...enter.options, delayMs: enter.options.delayMs + staggerDelay }
+        : enter.options;
+
+      const observer = new IntersectionObserver(
+        ([entry]) => {
+          if (!entry?.isIntersecting) return;
+          if (inViewFiredRef.current && once) return;
+          inViewFiredRef.current = true;
+          const base = baseRef.current;
+          if (!base) return;
+          const to = composeTarget(base, [enter.toDelta]);
+          animateTo(to, enterOptions, enter.affects, "enter");
+          if (once) observer.disconnect();
+        },
+        { threshold, rootMargin }
+      );
+
+      observer.observe(el);
+      return () => observer.disconnect();
+    }, [config.inView, enter, animateTo, stagger]);
 
     // Exit animation (presence-aware).
     React.useEffect(() => {

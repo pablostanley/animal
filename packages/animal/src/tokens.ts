@@ -121,7 +121,8 @@ export function parseAnimalTokens(an: string | undefined): AnimalConfig {
 
     const staggerMatch = /^stagger-(\d+)$/.exec(raw);
     if (staggerMatch) {
-      config.stagger = parseNumber(staggerMatch[1] ?? "") ?? undefined;
+      const staggerVal = parseNumber(staggerMatch[1] ?? "");
+      if (staggerVal != null) config.stagger = staggerVal;
       continue;
     }
 
