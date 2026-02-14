@@ -118,6 +118,15 @@ export function animateBetween(
   options: AnimateOptions,
   affects: Affects
 ): AnimateResult {
+  if (typeof el.animate !== "function") {
+    applyStyles(el, to, affects);
+    const animation = {
+      finished: Promise.resolve(),
+      cancel: () => {},
+    } as unknown as Animation;
+    return { animation, to };
+  }
+
   const willChange = affects.join(", ");
   const prevWillChange = el.style.willChange;
   el.style.willChange = prevWillChange ? `${prevWillChange}, ${willChange}` : willChange;
