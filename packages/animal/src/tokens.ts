@@ -136,6 +136,11 @@ export function parseAnimalTokens(an: string | undefined): AnimalConfig {
       continue;
     }
 
+    if (raw === "scroll-progress") {
+      config.scrollProgress = true;
+      continue;
+    }
+
     // Phase-scoped tokens (or fall back to global).
     const target = phase ? ensurePhase(config, phase) : undefined;
     const optTarget = target ? ensureOptions(target) : ensureOptions(config);
@@ -149,6 +154,13 @@ export function parseAnimalTokens(an: string | undefined): AnimalConfig {
     const delay = parseDelayToken(raw);
     if (delay !== null) {
       optTarget.delay = delay;
+      continue;
+    }
+
+    const loopMatch = /^loop(?:-(\d+))?$/.exec(raw);
+    if (loopMatch) {
+      const count = loopMatch[1] ? parseNumber(loopMatch[1]) : null;
+      optTarget.loop = count ?? true;
       continue;
     }
 
