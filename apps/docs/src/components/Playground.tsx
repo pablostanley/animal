@@ -25,12 +25,53 @@ function clampInt(value: number, min: number, max: number) {
 export function Playground() {
   const [easeToken, setEaseToken] = React.useState<string>("ease-spring-default");
   const [duration, setDuration] = React.useState<number>(900);
-  const [distance, setDistance] = React.useState<number>(180);
+  const [distance, setDistance] = React.useState<number>(320);
+  const [maxDistance, setMaxDistance] = React.useState<number>(320);
+  const [atRight, setAtRight] = React.useState<boolean>(false);
   const [nonce, setNonce] = React.useState<number>(0);
 
+  const trackRef = React.useRef<HTMLDivElement | null>(null);
+  const distanceTouchedRef = React.useRef(false);
+
+  React.useLayoutEffect(() => {
+    const el = trackRef.current;
+    if (!el) return;
+
+    const update = () => {
+      const cs = window.getComputedStyle(el);
+      const paddingLeft = Number.parseFloat(cs.paddingLeft || "0") || 0;
+      const paddingRight = Number.parseFloat(cs.paddingRight || "0") || 0;
+
+      // Square is `w-10 h-10` (40px). Keep it explicit to avoid layout reads in render.
+      const squareSize = 40;
+      const innerWidth = Math.max(0, el.clientWidth - paddingLeft - paddingRight);
+      const nextMax = Math.max(0, Math.floor(innerWidth - squareSize));
+
+      setMaxDistance(nextMax);
+      setDistance((current) => {
+        if (!distanceTouchedRef.current) return nextMax;
+        return Math.min(current, nextMax);
+      });
+    };
+
+    update();
+    const ro = new ResizeObserver(update);
+    ro.observe(el);
+    return () => ro.disconnect();
+  }, []);
+
+  const preset = React.useMemo(() => {
+    // Avoid an initial right->left animation on first paint.
+    if (nonce === 0) return "slide-right";
+    return atRight ? "slide-right" : "slide-left";
+  }, [atRight, nonce]);
+
+  const baseX = atRight ? distance : 0;
+  const durationUsed = nonce === 0 ? 0 : duration;
+
   const an = React.useMemo(
-    () => `enter:fade-right x-${distance} duration-${duration} ${easeToken}`,
-    [distance, duration, easeToken]
+    () => `enter:${preset} x-${distance} duration-${durationUsed} ${easeToken}`,
+    [distance, durationUsed, easeToken, preset]
   );
 
   const code = React.useMemo(
@@ -54,7 +95,7 @@ export function Example() {
         <p className="max-w-2xl text-sm leading-6 text-black/60 dark:text-white/60">
           Pick an easing, tweak parameters, and copy an{" "}
           <code className="rounded bg-white/10 px-1.5 py-0.5">an</code> string. This replays an{" "}
-          <code className="rounded bg-white/10 px-1.5 py-0.5">enter:fade-right</code> preset.
+          <code className="rounded bg-white/10 px-1.5 py-0.5">enter:slide-*</code> preset.
         </p>
       </div>
 
@@ -74,11 +115,13 @@ export function Example() {
                     key={opt.token}
                     type="button"
                     onClick={() => setEaseToken(opt.token)}
+                    aria-pressed={selected}
                     className={[
                       "flex items-center justify-between gap-3 border-t border-black/10 px-3 py-2 text-left text-sm dark:border-white/10",
                       selected
                         ? "bg-black text-white dark:bg-white dark:text-black"
                         : "bg-transparent text-black/70 hover:bg-black/5 dark:text-white/70 dark:hover:bg-white/5",
+                      "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-black/30 focus-visible:ring-offset-2 focus-visible:ring-offset-[var(--background)] dark:focus-visible:ring-white/30",
                     ].join(" ")}
                   >
                     <span className="truncate">{opt.label}</span>
@@ -103,11 +146,13 @@ export function Example() {
                     key={opt.token}
                     type="button"
                     onClick={() => setEaseToken(opt.token)}
+                    aria-pressed={selected}
                     className={[
                       "flex items-center justify-between gap-3 border-t border-black/10 px-3 py-2 text-left text-sm dark:border-white/10",
                       selected
                         ? "bg-black text-white dark:bg-white dark:text-black"
                         : "bg-transparent text-black/70 hover:bg-black/5 dark:text-white/70 dark:hover:bg-white/5",
+                      "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-black/30 focus-visible:ring-offset-2 focus-visible:ring-offset-[var(--background)] dark:focus-visible:ring-white/30",
                     ].join(" ")}
                   >
                     <span className="truncate">{opt.label}</span>
@@ -126,15 +171,21 @@ export function Example() {
             <p className="text-xs font-semibold uppercase tracking-[0.16em] text-black/50 dark:text-white/60">Preview</p>
             <button
               type="button"
-              onClick={() => setNonce((n) => n + 1)}
-              className="h-9 rounded-md border border-black/10 bg-black/5 px-3 text-sm text-black/70 hover:bg-black/10 dark:border-white/10 dark:bg-white/5 dark:text-white/80 dark:hover:bg-white/10"
+              onClick={() => {
+                setAtRight((v) => !v);
+                setNonce((n) => n + 1);
+              }}
+              className="h-9 rounded-md border border-black/10 bg-black/5 px-3 text-sm text-black/70 hover:bg-black/10 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-black/30 focus-visible:ring-offset-2 focus-visible:ring-offset-[var(--background)] dark:border-white/10 dark:bg-white/5 dark:text-white/80 dark:hover:bg-white/10 dark:focus-visible:ring-white/30"
             >
               Replay
             </button>
           </div>
 
           <div className="mt-3 overflow-hidden rounded-2xl border border-black/10 bg-[radial-gradient(50%_50%_at_50%_0%,rgba(0,0,0,0.10)_0%,rgba(255,255,255,0)_70%)] p-6 dark:border-white/10 dark:bg-[radial-gradient(50%_50%_at_50%_0%,rgba(255,255,255,0.10)_0%,rgba(0,0,0,0)_70%)]">
-            <div className="relative h-48 overflow-hidden rounded-xl border border-black/10 bg-black/5 dark:border-white/10 dark:bg-white/5">
+            <div
+              ref={trackRef}
+              className="relative flex h-48 items-center overflow-hidden rounded-xl border border-black/10 bg-black/5 p-6 dark:border-white/10 dark:bg-white/5"
+            >
               <div
                 className="pointer-events-none absolute inset-0 opacity-40"
                 style={{
@@ -144,19 +195,16 @@ export function Example() {
                 }}
               />
 
-              <div className="absolute inset-0 flex items-center">
-                <div className="relative w-full px-6">
-                  <div className="absolute left-6 right-6 top-1/2 h-px bg-black/10 dark:bg-white/10" />
+              <div className="pointer-events-none absolute left-6 right-6 top-1/2 h-px bg-black/10 dark:bg-white/10" />
 
-                  <A.div
-                    // Key forces a re-mount so the enter phase runs again.
-                    key={`${easeToken}-${duration}-${distance}-${nonce}`}
-                    an={an}
-                    className="h-10 w-10 rounded-xl bg-black dark:bg-white"
-                    aria-label="Preview square"
-                  />
-                </div>
-              </div>
+              <A.div
+                // Key forces a re-mount so the enter phase runs again.
+                key={`${easeToken}-${duration}-${distance}-${preset}-${atRight}-${nonce}`}
+                an={an}
+                className="h-10 w-10 rounded-xl bg-black dark:bg-white"
+                style={{ transform: `translate(${baseX}px, 0px) rotate(0deg) scale(1)` }}
+                aria-label="Preview square"
+              />
             </div>
 
             <div className="mt-4 grid grid-cols-1 gap-4 sm:grid-cols-2">
@@ -175,15 +223,18 @@ export function Example() {
               </label>
               <label className="flex flex-col gap-2">
                 <span className="text-xs font-semibold uppercase tracking-[0.16em] text-black/50 dark:text-white/60">
-                  Distance ({distance}px)
+                  Distance ({distance}px / {maxDistance}px)
                 </span>
                 <input
                   type="range"
                   min={24}
-                  max={320}
+                  max={Math.max(24, maxDistance)}
                   step={4}
                   value={distance}
-                  onChange={(e) => setDistance(clampInt(Number(e.target.value), 24, 320))}
+                  onChange={(e) => {
+                    distanceTouchedRef.current = true;
+                    setDistance(clampInt(Number(e.target.value), 24, Math.max(24, maxDistance)));
+                  }}
                 />
               </label>
             </div>
@@ -206,4 +257,3 @@ export function Example() {
     </div>
   );
 }
-

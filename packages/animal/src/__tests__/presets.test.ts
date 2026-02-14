@@ -6,6 +6,7 @@ describe("presets", () => {
     const items = getPresetManifestItems();
     expect(items.length).toBeGreaterThan(0);
     expect(items.some((p) => p.tokens.includes("enter:fade-up"))).toBe(true);
+    expect(items.some((p) => p.tokens.includes("enter:slide-right"))).toBe(true);
   });
 
   it("resolves a preset with parameters", () => {
@@ -20,4 +21,3 @@ describe("presets", () => {
     expect(isKnownPreset("enter", "nope")).toBe(false);
   });
 });
-

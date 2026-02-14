@@ -47,7 +47,7 @@ export function CodeBlock({ code, lang = "tsx" }: CodeBlockProps) {
         <button
           type="button"
           onClick={onCopy}
-          className="h-7 rounded-md border border-black/10 bg-black/5 px-2 text-[11px] text-black/70 hover:bg-black/10 dark:border-white/10 dark:bg-white/5 dark:text-white/80 dark:hover:bg-white/10"
+          className="h-7 rounded-md border border-black/10 bg-black/5 px-2 text-[11px] text-black/70 hover:bg-black/10 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-black/30 focus-visible:ring-offset-2 focus-visible:ring-offset-[var(--background)] dark:border-white/10 dark:bg-white/5 dark:text-white/80 dark:hover:bg-white/10 dark:focus-visible:ring-white/30"
           aria-label="Copy code"
         >
           {copied ? "Copied" : "Copy"}
@@ -59,4 +59,3 @@ export function CodeBlock({ code, lang = "tsx" }: CodeBlockProps) {
     </div>
   );
 }
-
