@@ -135,4 +135,34 @@ describe("A.* components", () => {
     expect(el.nodeName).toBe("DIV");
     cleanup();
   });
+
+  it("renders with loop token without crashing", () => {
+    const { container } = render(
+      <A.div an="enter:fade loop">Looping</A.div>
+    );
+    const el = container.firstChild as HTMLElement;
+    expect(el).toBeTruthy();
+    expect(el.nodeName).toBe("DIV");
+    cleanup();
+  });
+
+  it("renders with keyframe preset without crashing", () => {
+    const { container } = render(
+      <A.div an="enter:bounce-in">Bouncing</A.div>
+    );
+    const el = container.firstChild as HTMLElement;
+    expect(el).toBeTruthy();
+    expect(el.nodeName).toBe("DIV");
+    cleanup();
+  });
+
+  it("renders with scroll-progress without crashing", () => {
+    const { container } = render(
+      <A.div an="enter:fade-up scroll-progress">Scroll</A.div>
+    );
+    const el = container.firstChild as HTMLElement;
+    expect(el).toBeTruthy();
+    expect(el.nodeName).toBe("DIV");
+    cleanup();
+  });
 });

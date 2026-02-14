@@ -88,4 +88,24 @@ describe("parseAnimalTokens()", () => {
     const config = parseAnimalTokens("enter:fade-up enter:ease-cubic-0.25-0.1-0.25-1");
     expect(config.enter?.options?.easing).toBe("cubic-bezier(0.25, 0.1, 0.25, 1)");
   });
+
+  it("parses loop token", () => {
+    const config = parseAnimalTokens("fade-up loop");
+    expect(config.options?.loop).toBe(true);
+  });
+
+  it("parses loop-3 token", () => {
+    const config = parseAnimalTokens("fade-up loop-3");
+    expect(config.options?.loop).toBe(3);
+  });
+
+  it("parses phase-scoped loop", () => {
+    const config = parseAnimalTokens("enter:loop");
+    expect(config.enter?.options?.loop).toBe(true);
+  });
+
+  it("parses scroll-progress token", () => {
+    const config = parseAnimalTokens("fade-up scroll-progress");
+    expect(config.scrollProgress).toBe(true);
+  });
 });

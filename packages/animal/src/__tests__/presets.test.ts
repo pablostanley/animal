@@ -46,4 +46,27 @@ describe("presets", () => {
     expect(preset).not.toBeNull();
     expect(preset?.toDelta?.y).toBe(2);
   });
+
+  it("resolves enter:bounce-in as keyframe preset", () => {
+    const result = resolvePreset("enter", "bounce-in", {});
+    expect(result).not.toBeNull();
+    expect(result?.keyframes).toBeDefined();
+    expect(result!.keyframes!.length).toBe(4);
+    expect(result!.keyframes![0]!.offset).toBe(0);
+    expect(result!.keyframes![3]!.offset).toBe(1);
+  });
+
+  it("resolves enter:elastic-scale as keyframe preset", () => {
+    const result = resolvePreset("enter", "elastic-scale", {});
+    expect(result).not.toBeNull();
+    expect(result?.keyframes).toBeDefined();
+    expect(result!.keyframes!.length).toBe(4);
+  });
+
+  it("resolves exit:zoom-out as keyframe preset", () => {
+    const result = resolvePreset("exit", "zoom-out", {});
+    expect(result).not.toBeNull();
+    expect(result?.keyframes).toBeDefined();
+    expect(result!.keyframes![result!.keyframes!.length - 1]!.state.opacity).toBe(-1);
+  });
 });

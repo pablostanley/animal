@@ -47,4 +47,16 @@ describe("validate()", () => {
     expect(result.valid).toBe(true);
     expect(result.errors).toHaveLength(0);
   });
+
+  it("validates loop token as valid", () => {
+    const result = validate("enter:fade loop");
+    expect(result.valid).toBe(true);
+    expect(result.errors).toHaveLength(0);
+  });
+
+  it("validates scroll-progress as valid", () => {
+    const result = validate("enter:fade-up scroll-progress");
+    expect(result.valid).toBe(true);
+    expect(result.errors).toHaveLength(0);
+  });
 });
