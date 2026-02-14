@@ -4,6 +4,7 @@ import { parseAnimalTokens } from "../tokens";
 import { resolvePreset } from "../presets";
 import { applyDelta, applyStyles, animateBetween, readCurrentState } from "./waapi";
 import { useReducedMotion } from "./useReducedMotion";
+import { useIsomorphicLayoutEffect } from "./useIsomorphicLayoutEffect";
 import { usePresence } from "./Presence";
 
 type Affects = ReadonlyArray<"transform" | "opacity">;
@@ -237,7 +238,7 @@ export function createAnimalComponent<TTag extends keyof React.JSX.IntrinsicElem
     }, [registerPresence]);
 
     // Enter animation: run before paint to prevent flicker.
-    React.useLayoutEffect(() => {
+    useIsomorphicLayoutEffect(() => {
       const el = localRef.current;
       if (!el) return;
 
