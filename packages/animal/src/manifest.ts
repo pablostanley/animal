@@ -23,6 +23,11 @@ export const ANIMAL_MANIFEST: AnimalManifest = Object.freeze({
       examples: ["delay-60", "hover:delay-0"],
     },
     {
+      token: "ease",
+      description: "Shorthand for CSS `ease` (global or phase-scoped).",
+      examples: ["ease", "enter:ease"],
+    },
+    {
       token: "ease-<name>",
       description:
         "Set easing (global or phase-scoped). Names: linear, ease, in, out, in-out, spring-default, spring-snappy, spring-bouncy, spring-strong.",
@@ -41,4 +46,3 @@ export const ANIMAL_MANIFEST: AnimalManifest = Object.freeze({
   ],
   presets: getPresetManifestItems(),
 });
-
