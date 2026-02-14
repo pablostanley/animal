@@ -4,50 +4,57 @@ import * as React from "react";
 import { A, Presence } from "@vercel/animal/react";
 import { CopyButton } from "./CopyButton";
 
+type ParamMeta = { default: number; unit: string; description: string };
+
 type Props = {
   phase: string;
   name: string;
+  params?: Record<string, ParamMeta>;
 };
 
-/** Amplify default params so animations are clearly visible in the small preview box. */
-function amplifiedToken(phase: string, name: string): string {
-  const base = `${phase}:${name}`;
-
-  // Hover/press/focus — scope the param override to the phase
-  if (phase === "hover") {
-    if (name === "lift") return `${base} hover:y-10`;
-    if (name === "grow") return `${base} hover:scale-1.15`;
-    if (name === "shrink") return `${base} hover:scale-0.85`;
-  }
-  if (phase === "press") {
-    if (name === "compress") return `${base} press:scale-0.85`;
-    if (name === "push") return `${base} press:y-6`;
-  }
-  if (phase === "focus") {
-    if (name === "lift") return `${base} focus:y-6`;
-  }
-
-  // Enter/exit position presets — exaggerate offset
-  const yPresets = ["slide-up", "slide-down", "fade-up", "fade-down"];
-  const xPresets = ["slide-left", "slide-right", "fade-left", "fade-right"];
-  const scalePresets = ["pop", "scale", "elastic-scale", "zoom-out"];
-
-  const extras: string[] = [];
-  if (yPresets.includes(name)) extras.push("y-32");
-  if (xPresets.includes(name)) extras.push("x-32");
-  if (scalePresets.includes(name)) extras.push("scale-0.6");
-  if (name === "bounce-in" || name === "drop-in") extras.push("y-40");
-
-  return extras.length ? `${base} ${extras.join(" ")}` : base;
+function sliderConfig(key: string): { min: number; max: number; step: number } {
+  if (key === "scale") return { min: 0.1, max: 2.0, step: 0.05 };
+  if (key === "rotate") return { min: 0, max: 360, step: 1 };
+  // x, y, and anything else: pixel-based
+  return { min: 0, max: 100, step: 1 };
 }
 
-export function PresetPreview({ phase, name }: Props) {
+function formatValue(val: number, unit: string): string {
+  if (unit === "ratio") return String(val);
+  return `${val}${unit}`;
+}
+
+export function PresetPreview({ phase, name, params }: Props) {
   const [show, setShow] = React.useState(true);
   const [nonce, setNonce] = React.useState(0);
-  const token = `${phase}:${name}`;
+
+  // Slider state — initialised from param defaults
+  const [sliderValues, setSliderValues] = React.useState<Record<string, number>>(() => {
+    if (!params) return {};
+    const init: Record<string, number> = {};
+    for (const [k, v] of Object.entries(params)) {
+      init[k] = v.default;
+    }
+    return init;
+  });
+
+  // Reset slider values when params change (new preset selected)
+  React.useEffect(() => {
+    if (!params) {
+      setSliderValues({});
+      return;
+    }
+    const init: Record<string, number> = {};
+    for (const [k, v] of Object.entries(params)) {
+      init[k] = v.default;
+    }
+    setSliderValues(init);
+  }, [params]);
+
+  const isEnterExit = phase === "enter" || phase === "exit";
 
   const replay = React.useCallback(() => {
-    if (phase === "enter" || phase === "exit") {
+    if (isEnterExit) {
       setShow(false);
       requestAnimationFrame(() => {
         requestAnimationFrame(() => {
@@ -56,16 +63,71 @@ export function PresetPreview({ phase, name }: Props) {
         });
       });
     }
-  }, [phase]);
+  }, [isEnterExit]);
 
-  const isEnterExit = phase === "enter" || phase === "exit";
+  // Build the an="" token from slider values
+  const baseToken = `${phase}:${name}`;
+  const paramEntries = Object.entries(sliderValues);
+  const paramTokens = paramEntries
+    .map(([key, val]) => `${key}-${val}`)
+    .join(" ");
+
+  // For enter/exit, we need to scope param overrides
   const enterToken = phase === "enter" ? name : "fade";
   const exitToken = phase === "exit" ? name : "fade";
 
-  const amplifiedEnter = amplifiedToken("enter", enterToken);
-  const amplifiedExit = amplifiedToken("exit", exitToken);
-  const enterExitAn = `${amplifiedEnter} ${amplifiedExit}`;
-  const interactionAn = amplifiedToken(phase, name);
+  let anValue: string;
+  if (isEnterExit) {
+    const enterBase = `enter:${enterToken}`;
+    const exitBase = `exit:${exitToken}`;
+    if (paramTokens) {
+      // Scope param overrides to the active phase
+      anValue = phase === "enter"
+        ? `${enterBase} ${paramTokens} ${exitBase}`
+        : `${enterBase} ${exitBase} ${paramTokens}`;
+    } else {
+      anValue = `${enterBase} ${exitBase}`;
+    }
+  } else {
+    // Interaction presets: scope params to the phase
+    if (paramTokens) {
+      const scopedParams = paramEntries
+        .map(([key, val]) => `${phase}:${key}-${val}`)
+        .join(" ");
+      anValue = `${baseToken} ${scopedParams}`;
+    } else {
+      anValue = baseToken;
+    }
+  }
+
+  // The display token shows only the relevant preset + params
+  const displayToken = paramTokens ? `${baseToken} ${paramTokens}` : baseToken;
+
+  // Debounced replay on slider change for enter/exit
+  const sliderNonceRef = React.useRef(0);
+  const handleSliderChange = React.useCallback(
+    (key: string, val: number) => {
+      setSliderValues((prev) => ({ ...prev, [key]: val }));
+      if (isEnterExit) {
+        sliderNonceRef.current += 1;
+        const captured = sliderNonceRef.current;
+        setTimeout(() => {
+          if (sliderNonceRef.current === captured) {
+            setShow(false);
+            requestAnimationFrame(() => {
+              requestAnimationFrame(() => {
+                setShow(true);
+                setNonce((n) => n + 1);
+              });
+            });
+          }
+        }, 200);
+      }
+    },
+    [isEnterExit]
+  );
+
+  const hasParams = params && Object.keys(params).length > 0;
 
   return (
     <div className="flex flex-col gap-4">
@@ -84,26 +146,57 @@ export function PresetPreview({ phase, name }: Props) {
         {isEnterExit ? (
           <Presence present={show} key={nonce}>
             <A.div
-              an={enterExitAn}
+              an={anValue}
               className="relative z-10 h-20 w-20 rounded-2xl bg-gradient-to-br from-black to-black/80 shadow-lg dark:from-white dark:to-white/80"
             />
           </Presence>
         ) : (
           <A.div
-            an={interactionAn}
+            an={anValue}
             className="relative z-10 h-20 w-20 cursor-pointer rounded-2xl bg-gradient-to-br from-black to-black/80 shadow-lg dark:from-white dark:to-white/80"
             tabIndex={phase === "focus" ? 0 : undefined}
           />
         )}
       </div>
 
+      {/* Parameter sliders */}
+      {hasParams && (
+        <div className="mt-3 flex flex-col gap-3">
+          {Object.entries(params).map(([key, meta]) => {
+            const config = sliderConfig(key);
+            const val = sliderValues[key] ?? meta.default;
+            return (
+              <div key={key} className="flex flex-col gap-1">
+                <div className="flex items-baseline justify-between">
+                  <span className="text-[11px] font-medium text-black/70 dark:text-white/70">
+                    {key}
+                  </span>
+                  <span className="text-[11px] tabular-nums text-black/50 dark:text-white/50">
+                    {formatValue(val, meta.unit)}
+                  </span>
+                </div>
+                <input
+                  type="range"
+                  min={config.min}
+                  max={config.max}
+                  step={config.step}
+                  value={val}
+                  onChange={(e) => handleSliderChange(key, Number(e.target.value))}
+                  className="h-1 w-full cursor-pointer appearance-none rounded-full bg-black/10 accent-black/70 dark:bg-white/10 dark:accent-white/70 [&::-webkit-slider-thumb]:h-3 [&::-webkit-slider-thumb]:w-3 [&::-webkit-slider-thumb]:appearance-none [&::-webkit-slider-thumb]:rounded-full [&::-webkit-slider-thumb]:bg-black/70 dark:[&::-webkit-slider-thumb]:bg-white/70"
+                />
+              </div>
+            );
+          })}
+        </div>
+      )}
+
       {/* Token display + actions */}
       <div className="flex items-center justify-between gap-2">
         <div className="flex min-w-0 items-center gap-1">
           <code className="truncate rounded-lg bg-black/5 px-3 py-2 font-mono text-xs text-black/70 dark:bg-white/10 dark:text-white/70">
-            an=&quot;{token}&quot;
+            an=&quot;{displayToken}&quot;
           </code>
-          <CopyButton text={`an="${token}"`} />
+          <CopyButton text={`an="${displayToken}"`} />
         </div>
         {isEnterExit && (
           <button

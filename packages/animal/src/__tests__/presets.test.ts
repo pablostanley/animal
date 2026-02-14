@@ -25,14 +25,14 @@ describe("presets", () => {
     const preset = resolvePreset("exit", "fade-left", {});
     expect(preset).not.toBeNull();
     expect(preset?.toDelta?.opacity).toBe(-1);
-    expect(preset?.toDelta?.x).toBe(-16);
+    expect(preset?.toDelta?.x).toBe(-24);
   });
 
   it("resolves exit:pop preset", () => {
     const preset = resolvePreset("exit", "pop", {});
     expect(preset).not.toBeNull();
     expect(preset?.toDelta?.opacity).toBe(-1);
-    expect(preset?.toDelta?.scale).toBe(0.9 - 1);
+    expect(preset?.toDelta?.scale).toBe(0.85 - 1);
   });
 
   it("resolves hover:shrink preset", () => {
@@ -68,5 +68,53 @@ describe("presets", () => {
     expect(result).not.toBeNull();
     expect(result?.keyframes).toBeDefined();
     expect(result!.keyframes![result!.keyframes!.length - 1]!.state.opacity).toBe(-1);
+  });
+
+  it("has 104 total presets in the manifest", () => {
+    const items = getPresetManifestItems();
+    expect(items.length).toBe(104);
+  });
+
+  // --- Intensity variant tests ---
+
+  it("resolves enter:fade-up-sm with y=8", () => {
+    const preset = resolvePreset("enter", "fade-up-sm", {});
+    expect(preset).not.toBeNull();
+    expect(preset?.fromDelta?.y).toBe(8);
+  });
+
+  it("resolves enter:fade-up-lg with y=48", () => {
+    const preset = resolvePreset("enter", "fade-up-lg", {});
+    expect(preset).not.toBeNull();
+    expect(preset?.fromDelta?.y).toBe(48);
+  });
+
+  it("resolves enter:fade-up-xl with y=80", () => {
+    const preset = resolvePreset("enter", "fade-up-xl", {});
+    expect(preset).not.toBeNull();
+    expect(preset?.fromDelta?.y).toBe(80);
+  });
+
+  it("resolves exit:pop-lg with correct scale", () => {
+    const preset = resolvePreset("exit", "pop-lg", {});
+    expect(preset).not.toBeNull();
+    expect(preset?.toDelta?.opacity).toBe(-1);
+    expect(preset?.toDelta?.scale).toBe(0.7 - 1);
+  });
+
+  it("recognises slide-left-xl as a known enter preset", () => {
+    expect(isKnownPreset("enter", "slide-left-xl")).toBe(true);
+  });
+
+  it("does not recognise non-existent xxl intensity", () => {
+    expect(isKnownPreset("enter", "fade-up-xxl")).toBe(false);
+  });
+
+  it("resolves enter:bounce-in-xl keyframes with y=80", () => {
+    const result = resolvePreset("enter", "bounce-in-xl", {});
+    expect(result).not.toBeNull();
+    expect(result?.keyframes).toBeDefined();
+    expect(result!.keyframes!.length).toBe(4);
+    expect(result!.keyframes![0]!.state.y).toBe(80);
   });
 });

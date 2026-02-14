@@ -18,6 +18,7 @@ export default function PresetsPage() {
   );
 
   const [selected, setSelected] = React.useState<PresetItem>(ANIMAL_MANIFEST.presets[0]!);
+  const [nonce, setNonce] = React.useState(0);
 
   return (
     <div className="mx-auto max-w-[90rem] px-4 py-10">
@@ -61,7 +62,14 @@ export default function PresetsPage() {
                           return (
                             <tr
                               key={`${p.phase}:${p.name}`}
-                              onClick={() => setSelected(p)}
+                              onClick={() => {
+                              if (selected.phase === p.phase && selected.name === p.name) {
+                                setNonce((n) => n + 1);
+                              } else {
+                                setSelected(p);
+                                setNonce((n) => n + 1);
+                              }
+                            }}
                               className={[
                                 "cursor-pointer border-t border-black/10 transition-colors dark:border-white/10",
                                 isSelected
@@ -110,9 +118,10 @@ export default function PresetsPage() {
             </h2>
             <div className="mt-3">
               <PresetPreview
-                key={`${selected.phase}:${selected.name}`}
+                key={`${selected.phase}:${selected.name}:${nonce}`}
                 phase={selected.phase}
                 name={selected.name}
+                params={selected.params}
               />
             </div>
 

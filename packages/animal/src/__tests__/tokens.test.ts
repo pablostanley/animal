@@ -108,4 +108,16 @@ describe("parseAnimalTokens()", () => {
     const config = parseAnimalTokens("fade-up scroll-progress");
     expect(config.scrollProgress).toBe(true);
   });
+
+  it("parses intensity variant enter:fade-up-lg", () => {
+    const config = parseAnimalTokens("enter:fade-up-lg");
+    expect(config.enter?.preset).toBe("fade-up-lg");
+    expect(config.unknownTokens).toBeUndefined();
+  });
+
+  it("parses intensity variant enter:slide-left-sm with options", () => {
+    const config = parseAnimalTokens("enter:slide-left-sm duration-200");
+    expect(config.enter?.preset).toBe("slide-left-sm");
+    expect(config.options?.duration).toBe(200);
+  });
 });
