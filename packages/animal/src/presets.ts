@@ -230,6 +230,42 @@ export const PRESETS: readonly PresetSpec[] = [
     params: { y: pxParam(12, "Final Y offset (positive moves down).") },
     resolve: (p) => ({ fromDelta: {}, toDelta: { opacity: -1, y: p.y } }),
   },
+  {
+    phase: "exit",
+    name: "fade-left",
+    description: "Fade out while moving left.",
+    affects: ["opacity", "transform"],
+    defaults: EXIT_DEFAULTS,
+    params: { x: pxParam(12, "Final X offset (positive moves left).") },
+    resolve: (p) => ({ toDelta: { opacity: -1, x: -p.x } }),
+  },
+  {
+    phase: "exit",
+    name: "fade-right",
+    description: "Fade out while moving right.",
+    affects: ["opacity", "transform"],
+    defaults: EXIT_DEFAULTS,
+    params: { x: pxParam(12, "Final X offset (positive moves right).") },
+    resolve: (p) => ({ toDelta: { opacity: -1, x: p.x } }),
+  },
+  {
+    phase: "exit",
+    name: "pop",
+    description: "Fade and scale out (shrink).",
+    affects: ["opacity", "transform"],
+    defaults: EXIT_DEFAULTS,
+    params: { scale: scaleParam(0.96, "Final scale.") },
+    resolve: (p) => ({ toDelta: { opacity: -1, scale: p.scale - 1 } }),
+  },
+  {
+    phase: "exit",
+    name: "scale",
+    description: "Scale out.",
+    affects: ["transform"],
+    defaults: EXIT_DEFAULTS,
+    params: { scale: scaleParam(0.96, "Final scale.") },
+    resolve: (p) => ({ toDelta: { scale: p.scale - 1 } }),
+  },
   // Hover
   {
     phase: "hover",
@@ -249,6 +285,15 @@ export const PRESETS: readonly PresetSpec[] = [
     params: { scale: scaleParam(1.02, "Hover scale.") },
     resolve: (p) => ({ fromDelta: {}, toDelta: { scale: p.scale - 1 } }),
   },
+  {
+    phase: "hover",
+    name: "shrink",
+    description: "Scale down slightly on hover.",
+    affects: ["transform"],
+    defaults: HOVER_DEFAULTS,
+    params: { scale: scaleParam(0.98, "Hover scale.") },
+    resolve: (p) => ({ toDelta: { scale: p.scale - 1 } }),
+  },
   // Press
   {
     phase: "press",
@@ -258,6 +303,15 @@ export const PRESETS: readonly PresetSpec[] = [
     defaults: PRESS_DEFAULTS,
     params: { scale: scaleParam(0.98, "Press scale.") },
     resolve: (p) => ({ fromDelta: {}, toDelta: { scale: p.scale - 1 } }),
+  },
+  {
+    phase: "press",
+    name: "push",
+    description: "Push down slightly on press.",
+    affects: ["transform"],
+    defaults: PRESS_DEFAULTS,
+    params: { y: pxParam(2, "Push distance (positive pushes down).") },
+    resolve: (p) => ({ toDelta: { y: p.y } }),
   },
   // Focus
   {
