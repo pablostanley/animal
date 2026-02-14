@@ -51,13 +51,13 @@ export function GET() {
     - Timing:
       - \`duration-<ms>\` (e.g. \`duration-240\`)
       - \`delay-<ms>\` (e.g. \`delay-80\`)
-    - Easing:
-      - \`ease-linear\` | \`ease\` | \`ease-in\` | \`ease-out\` | \`ease-in-out\`
-      - \`ease-spring-default\` | \`ease-spring-snappy\` | \`ease-spring-bouncy\`
-    - Transforms (tokens apply as overrides):
-      - \`x-<px>\`, \`y-<px>\`, \`scale-<ratio>\` (e.g. \`y--8\`, \`scale-1.03\`)
-    - Reduced motion:
-      - \`rm-system\` | \`rm-always\` | \`rm-never\`
+	    - Easing:
+	      - \`ease-linear\` | \`ease\` | \`ease-in\` | \`ease-out\` | \`ease-in-out\`
+	      - \`ease-spring-default\` | \`ease-spring-snappy\` | \`ease-spring-bouncy\` | \`ease-spring-strong\`
+	    - Transforms (tokens apply as overrides):
+	      - \`x-<px>\`, \`y-<px>\`, \`scale-<ratio>\` (e.g. \`y--8\`, \`scale-1.03\`)
+	    - Reduced motion:
+	      - \`rm-system\` | \`rm-always\` | \`rm-never\`
 
     ## Manifest basics
 
