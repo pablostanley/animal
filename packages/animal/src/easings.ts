@@ -24,7 +24,9 @@ export const SPRING_PRESETS: Readonly<Record<SpringPresetName, SpringParams>> = 
 });
 
 export function isSpringEasing(easing: string | undefined): easing is `spring-${SpringPresetName}` {
-  return typeof easing === "string" && easing.startsWith("spring-");
+  if (typeof easing !== "string" || !easing.startsWith("spring-")) return false;
+  const name = easing.slice("spring-".length);
+  return name === "default" || name === "snappy" || name === "bouncy" || name === "strong";
 }
 
 export function getSpringPresetName(easing: `spring-${SpringPresetName}`): SpringPresetName {
