@@ -171,13 +171,24 @@ export function createAnimalComponent<TTag extends keyof React.JSX.IntrinsicElem
 
         flagsRef.current = { ...flagsRef.current, [phase]: active };
         const deltas: Array<PartialMotionState | undefined> = [];
+        const affectsSet = new Set<"transform" | "opacity">();
 
-        if (flagsRef.current.hover) deltas.push(hover?.toDelta);
-        if (flagsRef.current.press) deltas.push(press?.toDelta);
-        if (flagsRef.current.focus) deltas.push(focus?.toDelta);
+        if (flagsRef.current.hover) {
+          deltas.push(hover?.toDelta);
+          for (const a of hover?.affects ?? []) affectsSet.add(a);
+        }
+        if (flagsRef.current.press) {
+          deltas.push(press?.toDelta);
+          for (const a of press?.affects ?? []) affectsSet.add(a);
+        }
+        if (flagsRef.current.focus) {
+          deltas.push(focus?.toDelta);
+          for (const a of focus?.affects ?? []) affectsSet.add(a);
+        }
 
         const target = composeTarget(base, deltas);
-        animateTo(target, phaseSpec.options, ["transform"]);
+        const affects = Array.from(affectsSet);
+        animateTo(target, phaseSpec.options, affects.length > 0 ? affects : ["transform"]);
       },
       [animateTo, focus, hover, press]
     );
