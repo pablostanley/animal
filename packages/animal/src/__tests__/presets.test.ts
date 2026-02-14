@@ -20,4 +20,30 @@ describe("presets", () => {
     expect(isKnownPreset("enter", "fade-up")).toBe(true);
     expect(isKnownPreset("enter", "nope")).toBe(false);
   });
+
+  it("resolves exit:fade-left preset", () => {
+    const preset = resolvePreset("exit", "fade-left", {});
+    expect(preset).not.toBeNull();
+    expect(preset?.toDelta?.opacity).toBe(-1);
+    expect(preset?.toDelta?.x).toBe(-12);
+  });
+
+  it("resolves exit:pop preset", () => {
+    const preset = resolvePreset("exit", "pop", {});
+    expect(preset).not.toBeNull();
+    expect(preset?.toDelta?.opacity).toBe(-1);
+    expect(preset?.toDelta?.scale).toBe(0.96 - 1);
+  });
+
+  it("resolves hover:shrink preset", () => {
+    const preset = resolvePreset("hover", "shrink", {});
+    expect(preset).not.toBeNull();
+    expect(preset?.toDelta?.scale).toBe(0.98 - 1);
+  });
+
+  it("resolves press:push preset", () => {
+    const preset = resolvePreset("press", "push", {});
+    expect(preset).not.toBeNull();
+    expect(preset?.toDelta?.y).toBe(2);
+  });
 });

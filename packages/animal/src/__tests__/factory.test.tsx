@@ -2,7 +2,7 @@
 import { describe, expect, it, vi } from "vitest";
 import React from "react";
 import { render, fireEvent, cleanup } from "@testing-library/react";
-import { A } from "../react";
+import { A, Stagger } from "../react";
 
 describe("A.* components", () => {
   it("renders the correct HTML element", () => {
@@ -111,6 +111,28 @@ describe("A.* components", () => {
     await vi.waitFor(() => {
       expect(onComplete).toHaveBeenCalledWith("enter");
     });
+    cleanup();
+  });
+
+  it("renders inside Stagger without errors", () => {
+    const { container } = render(
+      <Stagger stagger={80}>
+        <A.div an="enter:fade-up">Item 1</A.div>
+        <A.div an="enter:fade-up">Item 2</A.div>
+      </Stagger>
+    );
+    const children = container.querySelectorAll("div");
+    expect(children.length).toBeGreaterThanOrEqual(2);
+    cleanup();
+  });
+
+  it("applies in-view token without crashing (jsdom fallback)", () => {
+    const { container } = render(
+      <A.div an="enter:fade-up in-view">Content</A.div>
+    );
+    const el = container.firstChild as HTMLElement;
+    expect(el).toBeTruthy();
+    expect(el.nodeName).toBe("DIV");
     cleanup();
   });
 });

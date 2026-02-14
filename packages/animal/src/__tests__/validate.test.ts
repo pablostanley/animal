@@ -35,4 +35,16 @@ describe("validate()", () => {
     expect(result.valid).toBe(true);
     expect(result.warnings).toHaveLength(0);
   });
+
+  it("validates in-view token as valid", () => {
+    const result = validate("enter:fade-up in-view");
+    expect(result.valid).toBe(true);
+    expect(result.errors).toHaveLength(0);
+  });
+
+  it("validates cubic-bezier easing as valid", () => {
+    const result = validate("enter:fade ease-cubic-0.4-0-0.2-1");
+    expect(result.valid).toBe(true);
+    expect(result.errors).toHaveLength(0);
+  });
 });

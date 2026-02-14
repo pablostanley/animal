@@ -82,6 +82,135 @@ export function Modal({ open }: { open: boolean }) {
           />
         </div>
       </section>
+
+      <section className="mt-10">
+        <h2 className="text-sm font-semibold uppercase tracking-[0.16em] text-black/50 dark:text-white/60">Stagger</h2>
+        <p className="mt-2 max-w-2xl text-sm leading-6 text-black/60 dark:text-white/60">
+          Wrap sibling <code className="rounded bg-white/10 px-1.5 py-0.5">A.*</code> elements in{" "}
+          <code className="rounded bg-white/10 px-1.5 py-0.5">Stagger</code> to automatically apply incremental delays
+          to each child's enter animation.
+        </p>
+        <div className="mt-4">
+          <CodeBlock
+            lang="tsx"
+            code={`import { A, Stagger } from "@vercel/animal/react";
+
+export function List({ items }: { items: { id: string; name: string }[] }) {
+  return (
+    <Stagger stagger={80}>
+      {items.map(item => (
+        <A.div key={item.id} an="enter:fade-up">
+          {item.name}
+        </A.div>
+      ))}
+    </Stagger>
+  );
+}`}
+          />
+        </div>
+        <div className="mt-4 overflow-x-auto">
+          <table className="w-full text-left text-sm">
+            <thead>
+              <tr className="border-b border-black/10 dark:border-white/10">
+                <th className="pb-2 pr-4 font-medium text-black/70 dark:text-white/70">Prop</th>
+                <th className="pb-2 pr-4 font-medium text-black/70 dark:text-white/70">Type</th>
+                <th className="pb-2 font-medium text-black/70 dark:text-white/70">Description</th>
+              </tr>
+            </thead>
+            <tbody className="text-black/60 dark:text-white/60">
+              <tr className="border-b border-black/5 dark:border-white/5">
+                <td className="py-2 pr-4"><code className="rounded bg-white/10 px-1.5 py-0.5">stagger</code></td>
+                <td className="py-2 pr-4"><code className="rounded bg-white/10 px-1.5 py-0.5">number</code></td>
+                <td className="py-2">Delay in ms between each child's animation start.</td>
+              </tr>
+              <tr>
+                <td className="py-2 pr-4"><code className="rounded bg-white/10 px-1.5 py-0.5">children</code></td>
+                <td className="py-2 pr-4"><code className="rounded bg-white/10 px-1.5 py-0.5">ReactNode</code></td>
+                <td className="py-2">Child elements (typically A.* components).</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </section>
+
+      <section className="mt-10">
+        <h2 className="text-sm font-semibold uppercase tracking-[0.16em] text-black/50 dark:text-white/60">useInView</h2>
+        <p className="mt-2 max-w-2xl text-sm leading-6 text-black/60 dark:text-white/60">
+          A hook that tracks whether an element is visible in the viewport using{" "}
+          <code className="rounded bg-white/10 px-1.5 py-0.5">IntersectionObserver</code>. For most cases, the{" "}
+          <code className="rounded bg-white/10 px-1.5 py-0.5">in-view</code> token on the{" "}
+          <code className="rounded bg-white/10 px-1.5 py-0.5">an</code> prop is simpler, but this hook gives manual control.
+        </p>
+        <div className="mt-4">
+          <CodeBlock
+            lang="tsx"
+            code={`import { useInView } from "@vercel/animal/react";
+
+export function LazySection() {
+  const { ref, inView } = useInView({ once: true, threshold: 0.1 });
+  return (
+    <div ref={ref}>
+      {inView ? <ExpensiveContent /> : <Placeholder />}
+    </div>
+  );
+}`}
+          />
+        </div>
+        <div className="mt-4 overflow-x-auto">
+          <table className="w-full text-left text-sm">
+            <thead>
+              <tr className="border-b border-black/10 dark:border-white/10">
+                <th className="pb-2 pr-4 font-medium text-black/70 dark:text-white/70">Option</th>
+                <th className="pb-2 pr-4 font-medium text-black/70 dark:text-white/70">Type</th>
+                <th className="pb-2 pr-4 font-medium text-black/70 dark:text-white/70">Default</th>
+                <th className="pb-2 font-medium text-black/70 dark:text-white/70">Description</th>
+              </tr>
+            </thead>
+            <tbody className="text-black/60 dark:text-white/60">
+              <tr className="border-b border-black/5 dark:border-white/5">
+                <td className="py-2 pr-4"><code className="rounded bg-white/10 px-1.5 py-0.5">threshold</code></td>
+                <td className="py-2 pr-4"><code className="rounded bg-white/10 px-1.5 py-0.5">number</code></td>
+                <td className="py-2 pr-4">0.1</td>
+                <td className="py-2">Visibility ratio (0-1) to trigger.</td>
+              </tr>
+              <tr className="border-b border-black/5 dark:border-white/5">
+                <td className="py-2 pr-4"><code className="rounded bg-white/10 px-1.5 py-0.5">rootMargin</code></td>
+                <td className="py-2 pr-4"><code className="rounded bg-white/10 px-1.5 py-0.5">string</code></td>
+                <td className="py-2 pr-4">"0px"</td>
+                <td className="py-2">Margin around the root (viewport).</td>
+              </tr>
+              <tr>
+                <td className="py-2 pr-4"><code className="rounded bg-white/10 px-1.5 py-0.5">once</code></td>
+                <td className="py-2 pr-4"><code className="rounded bg-white/10 px-1.5 py-0.5">boolean</code></td>
+                <td className="py-2 pr-4">true</td>
+                <td className="py-2">Stop observing after first intersection.</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </section>
+
+      <section className="mt-10">
+        <h2 className="text-sm font-semibold uppercase tracking-[0.16em] text-black/50 dark:text-white/60">in-view Token</h2>
+        <p className="mt-2 max-w-2xl text-sm leading-6 text-black/60 dark:text-white/60">
+          Add <code className="rounded bg-white/10 px-1.5 py-0.5">in-view</code> to the{" "}
+          <code className="rounded bg-white/10 px-1.5 py-0.5">an</code> prop to defer enter animations until the element
+          scrolls into the viewport. Use <code className="rounded bg-white/10 px-1.5 py-0.5">in-view-repeat</code> to
+          re-trigger every time.
+        </p>
+        <div className="mt-4">
+          <CodeBlock
+            lang="tsx"
+            code={`<A.div an="enter:fade-up in-view">
+  Animates when scrolled into view
+</A.div>
+
+<A.div an="enter:fade-up in-view-repeat">
+  Re-animates every time it enters the viewport
+</A.div>`}
+          />
+        </div>
+      </section>
     </div>
   );
 }

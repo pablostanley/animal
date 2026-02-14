@@ -84,8 +84,14 @@ export function GET() {
     - Easing:
       - \`ease-linear\` | \`ease\` | \`ease-in\` | \`ease-out\` | \`ease-in-out\`
       - \`ease-spring-default\` | \`ease-spring-snappy\` | \`ease-spring-bouncy\` | \`ease-spring-strong\`
+      - \`ease-cubic-<a>-<b>-<c>-<d>\` (custom cubic-bezier, e.g. \`ease-cubic-0.4-0-0.2-1\`)
     - Transforms (tokens apply as overrides):
       - \`x-<px>\`, \`y-<px>\`, \`scale-<ratio>\`, \`rotate-<deg>\` (e.g. \`y--8\`, \`scale-1.03\`, \`rotate-45\`)
+    - Stagger:
+      - \`stagger-<ms>\` (e.g. \`stagger-80\`) — delay between siblings inside a Stagger wrapper
+    - Scroll-triggered:
+      - \`in-view\` — animate when element enters the viewport (once)
+      - \`in-view-repeat\` — re-animate every time the element enters the viewport
     - Reduced motion:
       - \`rm-system\` | \`rm-always\` | \`rm-never\`
 
@@ -131,6 +137,36 @@ export function GET() {
     <A.div an="enter:fade-up hover:grow duration-300">
       Card content
     </A.div>
+    \`\`\`
+
+    ### Staggered list
+
+    \`\`\`tsx
+    import { A, Stagger } from "@vercel/animal/react";
+
+    <Stagger stagger={80}>
+      {items.map(item => (
+        <A.div key={item.id} an="enter:fade-up">
+          {item.name}
+        </A.div>
+      ))}
+    </Stagger>
+    \`\`\`
+
+    ### Scroll-triggered entrance
+
+    \`\`\`tsx
+    <A.div an="enter:fade-up in-view">
+      Animates when scrolled into view
+    </A.div>
+    \`\`\`
+
+    ### Manual scroll trigger (useInView)
+
+    \`\`\`tsx
+    import { useInView } from "@vercel/animal/react";
+
+    const { ref, inView } = useInView({ once: true });
     \`\`\`
 
     ## Manifest basics

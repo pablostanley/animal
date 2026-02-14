@@ -63,4 +63,29 @@ describe("parseAnimalTokens()", () => {
     const config = parseAnimalTokens("enter:fade-up hover:wat foo:bar");
     expect(config.unknownTokens).toEqual(["hover:wat", "foo:bar"]);
   });
+
+  it("parses stagger-100 token", () => {
+    const config = parseAnimalTokens("fade-up stagger-100");
+    expect(config.stagger).toBe(100);
+  });
+
+  it("parses in-view token", () => {
+    const config = parseAnimalTokens("fade-up in-view");
+    expect(config.inView).toBe(true);
+  });
+
+  it("parses in-view-repeat token", () => {
+    const config = parseAnimalTokens("fade-up in-view-repeat");
+    expect(config.inView).toEqual({ once: false });
+  });
+
+  it("parses ease-cubic-0.4-0-0.2-1", () => {
+    const config = parseAnimalTokens("fade-up ease-cubic-0.4-0-0.2-1");
+    expect(config.options?.easing).toBe("cubic-bezier(0.4, 0, 0.2, 1)");
+  });
+
+  it("parses phase-scoped cubic-bezier", () => {
+    const config = parseAnimalTokens("enter:fade-up enter:ease-cubic-0.25-0.1-0.25-1");
+    expect(config.enter?.options?.easing).toBe("cubic-bezier(0.25, 0.1, 0.25, 1)");
+  });
 });
