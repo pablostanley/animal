@@ -1,0 +1,132 @@
+---
+title: Token DSL
+description: The an prop accepts a space-separated string of tokens. Tokens are parsed left to right and configure which preset to play, when, and how.
+---
+
+## Grammar
+
+```txt
+an="[phase:]preset [phase:]preset ...timing ...easing ...transform ...behavior"
+
+Examples:
+  an="enter:fade-up"
+  an="enter:fade-up exit:fade-down duration-240 ease-in-out"
+  an="hover:lift press:compress duration-180 ease-out"
+  an="enter:scale scale-1.2 duration-800 ease-spring-bouncy in-view loop"
+```
+
+## Phases
+
+Phases scope a preset to a specific interaction or lifecycle event. Prefix a preset with a phase and a colon.
+
+| Phase | Example | Triggers when |
+| --- | --- | --- |
+| `enter` | `enter:fade-up` | Element mounts (or enters via Presence) |
+| `exit` | `exit:fade-down` | Element unmounts (requires Presence wrapper) |
+| `hover` | `hover:lift` | Pointer enters the element |
+| `press` | `press:compress` | Pointer is pressed down on the element |
+| `focus` | `focus:lift` | Element receives keyboard focus |
+
+An unprefixed preset defaults to the `enter` phase.
+
+## Timing
+
+Control animation duration and delay. Values are in milliseconds.
+
+| Token | Example | Description |
+| --- | --- | --- |
+| `duration-{ms}` | `duration-240` | Animation duration in milliseconds |
+| `delay-{ms}` | `delay-80` | Delay before animation starts |
+
+```tsx
+<A.div an="enter:fade-up duration-300 delay-100">
+  Fades up over 300ms after a 100ms delay
+</A.div>
+```
+
+## Easing
+
+Set easing curves. CSS easing keywords, spring presets, and custom cubic-bezier are supported.
+
+| Token | Resolves to |
+| --- | --- |
+| `ease` | CSS `ease` |
+| `ease-linear` | CSS `linear` |
+| `ease-in` | CSS `ease-in` |
+| `ease-out` | CSS `ease-out` |
+| `ease-in-out` | CSS `ease-in-out` |
+| `ease-spring-default` | Default spring easing |
+| `ease-spring-snappy` | Snappy spring with minimal overshoot |
+| `ease-spring-bouncy` | Bouncy spring with overshoot |
+| `ease-spring-strong` | Strong spring with heavy overshoot |
+| `ease-cubic-{x1}-{y1}-{x2}-{y2}` | Custom `cubic-bezier(x1, y1, x2, y2)` |
+
+```tsx
+<A.div an="enter:fade-up ease-spring-bouncy">
+  Spring-based fade up
+</A.div>
+
+<A.div an="enter:fade-up ease-cubic-0.34-1.56-0.64-1">
+  Custom cubic-bezier easing
+</A.div>
+```
+
+## Transforms
+
+Override the default transform values of a preset. Negative values use a minus sign.
+
+| Token | Example | Description |
+| --- | --- | --- |
+| `x-{px}` | `x-12` | Horizontal translate in pixels |
+| `y-{px}` | `y--8` | Vertical translate in pixels (negative = up) |
+| `scale-{ratio}` | `scale-1.05` | Scale factor (1 = no change) |
+| `rotate-{deg}` | `rotate-5` | Rotation in degrees |
+
+```tsx
+<A.div an="enter:fade-up y-20 scale-0.95 duration-400">
+  Custom fade up with larger translate and slight scale
+</A.div>
+```
+
+## Behavior
+
+Control when and how animations trigger.
+
+| Token | Description |
+| --- | --- |
+| `in-view` | Defer enter animation until element scrolls into viewport (once) |
+| `in-view-repeat` | Re-trigger enter animation every time element enters viewport |
+| `scroll-progress` | Link animation progress to scroll position (0-100%) |
+| `loop` | Repeat the enter animation indefinitely |
+| `loop-{n}` | Repeat the enter animation n times |
+
+```tsx
+{/* Animate when scrolled into view */}
+<A.div an="enter:fade-up in-view">Lazy fade in</A.div>
+
+{/* Scroll-linked parallax */}
+<A.div an="enter:fade-up scroll-progress y-40">Parallax</A.div>
+
+{/* Loop 3 times */}
+<A.div an="enter:scale scale-1.2 duration-800 loop-3">Pulse</A.div>
+```
+
+## Stagger
+
+The `stagger-{ms}` token sets the delay increment between children when used inside a `Stagger` component.
+
+```tsx
+<A.div an="enter:fade-up stagger-80">
+  Adds 80ms between each child animation
+</A.div>
+```
+
+## Reduced Motion
+
+Control how the animation responds to the user's reduced motion preference.
+
+| Token | Description |
+| --- | --- |
+| `rm-system` | Respect the OS-level `prefers-reduced-motion` setting (default) |
+| `rm-always` | Always reduce motion regardless of OS setting |
+| `rm-never` | Never reduce motion (use with caution) |

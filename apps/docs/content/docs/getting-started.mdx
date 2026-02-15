@@ -1,0 +1,83 @@
+---
+title: Getting Started
+description: Get up and running with Animal in under a minute. Install the package, import the components, and start animating.
+---
+
+## Install
+
+```bash tab="npm"
+npm install @vercel/animal
+```
+
+```bash tab="pnpm"
+pnpm add @vercel/animal
+```
+
+```bash tab="yarn"
+yarn add @vercel/animal
+```
+
+## Setup
+
+Import `A` from the React entry point. `A` is a proxy that wraps any HTML element: `A.div`, `A.button`, `A.span`, etc.
+
+```tsx
+import { A } from "@vercel/animal/react";
+
+export function FadeIn({ children }: { children: React.ReactNode }) {
+  return (
+    <A.div an="enter:fade-up duration-240 ease-out">
+      {children}
+    </A.div>
+  );
+}
+```
+
+## Your First Animation
+
+Combine `A` with `Presence` to animate elements in and out. The `an` prop accepts a space-separated list of tokens that describe the animation.
+
+```tsx
+import { A, Presence } from "@vercel/animal/react";
+import { useState } from "react";
+
+export function ToggleDemo() {
+  const [open, setOpen] = useState(false);
+
+  return (
+    <div>
+      <button onClick={() => setOpen(!open)}>Toggle</button>
+      <Presence present={open}>
+        <A.div an="enter:fade-up exit:fade-down duration-240 ease-in-out">
+          Hello, Animal!
+        </A.div>
+      </Presence>
+    </div>
+  );
+}
+```
+
+## Token Quick Reference
+
+The `an` prop uses a small DSL. Here are the most common tokens:
+
+| Category | Example | Description |
+| --- | --- | --- |
+| Phase preset | `enter:fade-up` | Animate on enter with fade + translate up |
+| Duration | `duration-240` | Set duration to 240ms |
+| Delay | `delay-80` | Delay animation start by 80ms |
+| Easing | `ease-in-out` | CSS easing function |
+| Spring | `ease-spring-bouncy` | Spring easing preset |
+| Transform | `y-12 scale-1.03` | Override transform values |
+| Behavior | `in-view loop` | Trigger on scroll, loop indefinitely |
+
+## Next Steps
+
+<Cards>
+  <Card title="Token DSL" description="Full token grammar reference" href="/docs/tokens" />
+  <Card title="Components" description="A.*, Presence, and Stagger" href="/docs/components" />
+  <Card title="Hooks" description="useInView, useScrollProgress, and more" href="/docs/hooks" />
+  <Card title="Easings & Springs" description="Easing functions and spring presets" href="/docs/easings" />
+  <Card title="Presets" description="Browse all animation presets" href="/docs/presets" />
+  <Card title="API Reference" description="Complete API documentation" href="/docs/api" />
+</Cards>

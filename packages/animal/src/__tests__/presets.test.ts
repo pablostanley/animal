@@ -70,9 +70,9 @@ describe("presets", () => {
     expect(result!.keyframes![result!.keyframes!.length - 1]!.state.opacity).toBe(-1);
   });
 
-  it("has 104 total presets in the manifest", () => {
+  it("has 128 total presets in the manifest", () => {
     const items = getPresetManifestItems();
-    expect(items.length).toBe(104);
+    expect(items.length).toBe(128);
   });
 
   // --- Intensity variant tests ---
@@ -116,5 +116,56 @@ describe("presets", () => {
     expect(result?.keyframes).toBeDefined();
     expect(result!.keyframes!.length).toBe(4);
     expect(result!.keyframes![0]!.state.y).toBe(80);
+  });
+
+  // --- 2xl intensity tests ---
+
+  it("resolves enter:fade-up-2xl with y=120", () => {
+    const preset = resolvePreset("enter", "fade-up-2xl", {});
+    expect(preset).not.toBeNull();
+    expect(preset?.fromDelta?.y).toBe(120);
+  });
+
+  it("recognises slide-left-2xl as a known enter preset", () => {
+    expect(isKnownPreset("enter", "slide-left-2xl")).toBe(true);
+  });
+
+  it("resolves enter:bounce-in-2xl keyframes with y=120", () => {
+    const result = resolvePreset("enter", "bounce-in-2xl", {});
+    expect(result).not.toBeNull();
+    expect(result?.keyframes).toBeDefined();
+    expect(result!.keyframes![0]!.state.y).toBe(120);
+  });
+
+  // --- Duration scaling tests ---
+
+  it("scales duration for lg intensity (1.25x)", () => {
+    const base = resolvePreset("enter", "fade-up", {});
+    const lg = resolvePreset("enter", "fade-up-lg", {});
+    expect(base).not.toBeNull();
+    expect(lg).not.toBeNull();
+    expect(lg!.defaults.durationMs).toBe(Math.round(base!.defaults.durationMs * 1.25));
+  });
+
+  it("scales duration for xl intensity (1.5x)", () => {
+    const base = resolvePreset("enter", "fade-up", {});
+    const xl = resolvePreset("enter", "fade-up-xl", {});
+    expect(base).not.toBeNull();
+    expect(xl).not.toBeNull();
+    expect(xl!.defaults.durationMs).toBe(Math.round(base!.defaults.durationMs * 1.5));
+  });
+
+  it("scales duration for 2xl intensity (1.75x)", () => {
+    const base = resolvePreset("enter", "fade-up", {});
+    const xxl = resolvePreset("enter", "fade-up-2xl", {});
+    expect(base).not.toBeNull();
+    expect(xxl).not.toBeNull();
+    expect(xxl!.defaults.durationMs).toBe(Math.round(base!.defaults.durationMs * 1.75));
+  });
+
+  it("keeps sm duration same as base (1.0x)", () => {
+    const base = resolvePreset("enter", "fade-up", {});
+    const sm = resolvePreset("enter", "fade-up-sm", {});
+    expect(sm!.defaults.durationMs).toBe(base!.defaults.durationMs);
   });
 });

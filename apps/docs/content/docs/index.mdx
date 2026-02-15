@@ -1,0 +1,55 @@
+---
+title: Introduction
+description: Animal is an opinionated preset library for UI micro-interactions and presence transitions in React and Next.js.
+---
+
+Animal is an opinionated preset library for UI micro-interactions and presence transitions in React and Next.js.
+Apply animations via a small, predictable token DSL on the `an` prop.
+
+## Quickstart (React)
+
+Use `A` to animate DOM elements and `Presence` to keep elements mounted until exit finishes.
+
+```tsx
+import { A, Presence } from "@vercel/animal/react";
+
+export function Example({ open }: { open: boolean }) {
+  return (
+    <Presence present={open}>
+      <A.div an="enter:fade-up exit:fade-down duration-240 ease-in-out">
+        Hello
+      </A.div>
+    </Presence>
+  );
+}
+```
+
+## Token DSL
+
+The `an` prop is a space-separated list of tokens.
+Presets are usually phase-scoped like `hover:lift`.
+
+```txt
+// phases
+enter:fade-up exit:fade-down hover:lift press:compress focus:lift
+
+// timing
+duration-240 delay-80
+
+// easing
+ease-in-out ease-spring-default ease-spring-snappy ease-spring-bouncy
+
+// transforms (px or unitless)
+x-12 y--8 scale-1.03
+```
+
+## Explore
+
+<Cards>
+  <Card title="Getting Started" description="Install and add your first animation." href="/docs/getting-started" />
+  <Card title="Token DSL" description="Full reference for the an prop grammar." href="/docs/tokens" />
+  <Card title="Components" description="A, Presence, and Stagger with live demos." href="/docs/components" />
+  <Card title="Hooks" description="useInView, useScrollProgress, useReducedMotion." href="/docs/hooks" />
+  <Card title="Easings" description="Interactive playground for spring and CSS curves." href="/docs/easings" />
+  <Card title="Presets" description="Browse all animation presets with live preview." href="/docs/presets" />
+</Cards>

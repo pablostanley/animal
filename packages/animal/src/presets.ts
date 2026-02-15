@@ -67,14 +67,21 @@ function withDefaults(params: PresetParams | undefined, defaults: Required<Prese
 
 // --- Intensity variant helpers ---
 
-type IntensitySuffix = "sm" | "lg" | "xl";
-const INTENSITY_SUFFIXES: IntensitySuffix[] = ["sm", "lg", "xl"];
+type IntensitySuffix = "sm" | "lg" | "xl" | "2xl";
+const INTENSITY_SUFFIXES: IntensitySuffix[] = ["sm", "lg", "xl", "2xl"];
+
+// Duration scales proportionally with intensity so larger animations don't feel rushed
+const DURATION_SCALE: Record<IntensitySuffix, number> = { sm: 1, lg: 1.25, xl: 1.5, "2xl": 1.75 };
 
 function positionVariants(base: PresetSpec, paramKey: "x" | "y", sizes: Record<IntensitySuffix, number>): PresetSpec[] {
   return INTENSITY_SUFFIXES.map((suffix) => ({
     ...base,
     name: `${base.name}-${suffix}`,
     description: `${base.description.replace(/\.$/, "")} (${suffix}).`,
+    defaults: {
+      ...base.defaults,
+      durationMs: Math.round(base.defaults.durationMs * DURATION_SCALE[suffix]),
+    },
     params: { [paramKey]: pxParam(sizes[suffix], base.params[paramKey]!.description) },
   }));
 }
@@ -84,17 +91,21 @@ function scaleVariants(base: PresetSpec, sizes: Record<IntensitySuffix, number>)
     ...base,
     name: `${base.name}-${suffix}`,
     description: `${base.description.replace(/\.$/, "")} (${suffix}).`,
+    defaults: {
+      ...base.defaults,
+      durationMs: Math.round(base.defaults.durationMs * DURATION_SCALE[suffix]),
+    },
     params: { scale: scaleParam(sizes[suffix], base.params.scale!.description) },
   }));
 }
 
-const POS_SIZES: Record<IntensitySuffix, number> = { sm: 8, lg: 48, xl: 80 };
-const ENTER_SCALE_SIZES: Record<IntensitySuffix, number> = { sm: 0.95, lg: 0.7, xl: 0.5 };
-const EXIT_SCALE_SIZES: Record<IntensitySuffix, number> = { sm: 0.95, lg: 0.7, xl: 0.5 };
-const ZOOM_OUT_SIZES: Record<IntensitySuffix, number> = { sm: 1.05, lg: 1.3, xl: 1.5 };
-const BOUNCE_IN_SIZES: Record<IntensitySuffix, number> = { sm: 12, lg: 48, xl: 80 };
-const DROP_IN_SIZES: Record<IntensitySuffix, number> = { sm: 16, lg: 60, xl: 100 };
-const ELASTIC_SCALE_SIZES: Record<IntensitySuffix, number> = { sm: 0.92, lg: 0.7, xl: 0.5 };
+const POS_SIZES: Record<IntensitySuffix, number> = { sm: 8, lg: 48, xl: 80, "2xl": 120 };
+const ENTER_SCALE_SIZES: Record<IntensitySuffix, number> = { sm: 0.95, lg: 0.7, xl: 0.5, "2xl": 0.3 };
+const EXIT_SCALE_SIZES: Record<IntensitySuffix, number> = { sm: 0.95, lg: 0.7, xl: 0.5, "2xl": 0.3 };
+const ZOOM_OUT_SIZES: Record<IntensitySuffix, number> = { sm: 1.05, lg: 1.3, xl: 1.5, "2xl": 1.75 };
+const BOUNCE_IN_SIZES: Record<IntensitySuffix, number> = { sm: 12, lg: 48, xl: 80, "2xl": 120 };
+const DROP_IN_SIZES: Record<IntensitySuffix, number> = { sm: 16, lg: 60, xl: 100, "2xl": 140 };
+const ELASTIC_SCALE_SIZES: Record<IntensitySuffix, number> = { sm: 0.92, lg: 0.7, xl: 0.5, "2xl": 0.3 };
 
 // --- Base presets ---
 
