@@ -2,7 +2,7 @@ import { ANIMAL_MANIFEST } from "@vercel/animal";
 
 export default function ManifestPage() {
   return (
-    <div className="mx-auto max-w-5xl px-4 py-10">
+    <div>
       <h1 className="text-2xl font-semibold tracking-tight text-black dark:text-white">Agent Manifest</h1>
       <p className="mt-2 max-w-2xl text-sm leading-6 text-black/60 dark:text-white/60">
         This is the machine-readable preset catalog. Fetch it at{" "}

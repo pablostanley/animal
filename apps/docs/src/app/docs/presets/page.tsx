@@ -21,7 +21,7 @@ export default function PresetsPage() {
   const [nonce, setNonce] = React.useState(0);
 
   return (
-    <div className="mx-auto max-w-[90rem] px-4 py-10">
+    <div>
       <div className="mb-8 max-w-2xl">
         <h1 className="text-2xl font-semibold tracking-tight text-black dark:text-white">
           Presets

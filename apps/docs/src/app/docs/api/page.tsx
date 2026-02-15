@@ -3,7 +3,7 @@ import { CodeBlock } from "@/components/CodeBlock";
 
 export default function ApiPage() {
   return (
-    <div className="mx-auto max-w-5xl px-4 py-10">
+    <div>
       <h1 className="text-2xl font-semibold tracking-tight text-black dark:text-white">API</h1>
       <p className="mt-2 max-w-2xl text-sm leading-6 text-black/60 dark:text-white/60">
         Animal’s MVP is intentionally small: preset tokens in an <code className="rounded bg-white/10 px-1.5 py-0.5">an</code>{" "}

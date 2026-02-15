@@ -1,42 +1,24 @@
 import Link from "next/link";
 import { CodeBlock } from "@/components/CodeBlock";
 
+const navCards = [
+  { href: "/docs/getting-started", title: "Getting Started", description: "Install and add your first animation." },
+  { href: "/docs/tokens", title: "Token DSL", description: "Full reference for the an prop grammar." },
+  { href: "/docs/components", title: "Components", description: "A, Presence, and Stagger with live demos." },
+  { href: "/docs/hooks", title: "Hooks", description: "useInView, useScrollProgress, useReducedMotion." },
+  { href: "/docs/easings", title: "Easings", description: "Interactive playground for spring and CSS curves." },
+  { href: "/docs/presets", title: "Presets", description: "Browse all animation presets with live preview." },
+];
+
 export default function DocsHomePage() {
   return (
-    <div className="mx-auto max-w-5xl px-4 py-10">
+    <div>
       <h1 className="text-2xl font-semibold tracking-tight text-black dark:text-white">Docs</h1>
       <p className="mt-2 max-w-2xl text-sm leading-6 text-black/60 dark:text-white/60">
         Animal is an opinionated preset library for UI micro-interactions and presence transitions in React and Next.js.
         Apply animations via a small, predictable token DSL on the <code className="rounded bg-white/10 px-1.5 py-0.5">an</code>{" "}
         prop.
       </p>
-
-      <div className="mt-6 flex flex-col gap-3 sm:flex-row sm:items-center">
-        <Link
-          href="/docs/presets"
-          className="inline-flex h-10 items-center justify-center rounded-md bg-black px-4 text-sm font-medium text-white focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-black/30 focus-visible:ring-offset-2 focus-visible:ring-offset-[var(--background)] dark:bg-white dark:text-black dark:focus-visible:ring-white/30"
-        >
-          Presets
-        </Link>
-        <Link
-          href="/docs/api"
-          className="inline-flex h-10 items-center justify-center rounded-md border border-black/10 bg-black/5 px-4 text-sm font-medium text-black/70 hover:bg-black/10 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-black/30 focus-visible:ring-offset-2 focus-visible:ring-offset-[var(--background)] dark:border-white/10 dark:bg-white/5 dark:text-white/80 dark:hover:bg-white/10 dark:focus-visible:ring-white/30"
-        >
-          API
-        </Link>
-        <Link
-          href="/docs/manifest"
-          className="inline-flex h-10 items-center justify-center rounded-md border border-black/10 bg-black/5 px-4 text-sm font-medium text-black/70 hover:bg-black/10 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-black/30 focus-visible:ring-offset-2 focus-visible:ring-offset-[var(--background)] dark:border-white/10 dark:bg-white/5 dark:text-white/80 dark:hover:bg-white/10 dark:focus-visible:ring-white/30"
-        >
-          Agent manifest
-        </Link>
-        <Link
-          href="/manifest.json"
-          className="rounded-md text-sm text-black/50 hover:text-black focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-black/30 focus-visible:ring-offset-2 focus-visible:ring-offset-[var(--background)] dark:text-white/50 dark:hover:text-white dark:focus-visible:ring-white/30"
-        >
-          /manifest.json
-        </Link>
-      </div>
 
       <section className="mt-10">
         <h2 className="text-sm font-semibold uppercase tracking-[0.16em] text-black/50 dark:text-white/60">
@@ -85,6 +67,24 @@ ease-in-out ease-spring-default ease-spring-snappy ease-spring-bouncy
 // transforms (px or unitless)
 x-12 y--8 scale-1.03`}
           />
+        </div>
+      </section>
+
+      <section className="mt-10">
+        <h2 className="text-sm font-semibold uppercase tracking-[0.16em] text-black/50 dark:text-white/60">
+          Explore
+        </h2>
+        <div className="mt-4 grid grid-cols-1 gap-3 sm:grid-cols-2 lg:grid-cols-3">
+          {navCards.map((card) => (
+            <Link
+              key={card.href}
+              href={card.href}
+              className="rounded-2xl border border-black/10 bg-black/[0.03] p-4 hover:bg-black/[0.06] dark:border-white/10 dark:bg-white/[0.03] dark:hover:bg-white/[0.06]"
+            >
+              <p className="text-sm font-medium text-black/80 dark:text-white/80">{card.title}</p>
+              <p className="mt-1 text-xs text-black/50 dark:text-white/50">{card.description}</p>
+            </Link>
+          ))}
         </div>
       </section>
     </div>

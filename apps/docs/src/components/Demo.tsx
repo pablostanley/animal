@@ -136,9 +136,9 @@ export function Demo() {
   return (
     <section className="flex flex-col gap-4">
       <div>
-        <p className="text-sm font-medium text-black/80 dark:text-white/80">Try it</p>
+        <p className="text-sm font-medium text-black/80 dark:text-white/80">In action</p>
         <p className="text-sm text-black/60 dark:text-white/60">
-          Interactive demos powered by preset tokens. Hover, click, and toggle.
+          Hover, click, and toggle. Every animation below is a single prop.
         </p>
       </div>
       <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
