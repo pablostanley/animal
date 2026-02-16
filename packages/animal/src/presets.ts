@@ -35,7 +35,7 @@ const ENTER_DEFAULTS: PresetManifestItem["defaults"] = {
 const EXIT_DEFAULTS: PresetManifestItem["defaults"] = {
   durationMs: 240,
   delayMs: 0,
-  easing: "ease-in-out",
+  easing: "ease-in",
 };
 
 const HOVER_DEFAULTS: PresetManifestItem["defaults"] = {
