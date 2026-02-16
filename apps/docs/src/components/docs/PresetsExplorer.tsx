@@ -64,12 +64,9 @@ function IntensityToggle({
         <button
           key={intensity}
           type="button"
-          onClick={(e) => {
-            e.stopPropagation();
-            onChange(intensity);
-          }}
+          onClick={() => onChange(intensity)}
           className={[
-            "rounded px-1.5 py-0.5 font-mono text-[10px] font-medium transition-colors",
+            "rounded px-2 py-1 font-mono text-[11px] font-medium transition-colors",
             intensity === active
               ? "bg-black/10 text-black dark:bg-white/15 dark:text-white"
               : "text-black/40 hover:text-black/70 dark:text-white/40 dark:hover:text-white/70",
@@ -97,41 +94,32 @@ export function PresetsExplorer() {
       .filter((pg) => pg.groups.length > 0);
   }, [groups]);
 
-  // Track active intensity per group
-  const [intensities, setIntensities] = React.useState<Record<string, Intensity>>({});
+  // Global intensity level
+  const [intensity, setIntensity] = React.useState<Intensity>("default");
 
-  const getIntensityForGroup = (group: PresetGroup): Intensity => {
-    const key = `${group.phase}:${group.baseName}`;
-    return intensities[key] ?? "default";
-  };
-
-  const setIntensityForGroup = (group: PresetGroup, intensity: Intensity) => {
-    const key = `${group.phase}:${group.baseName}`;
-    setIntensities((prev) => ({ ...prev, [key]: intensity }));
-    // Also select this group for preview
-    const preset = group.variants[intensity];
-    if (preset) {
-      setSelected(preset);
-      setNonce((n) => n + 1);
-    }
-  };
-
-  // Selected preset for the sticky preview
-  const defaultPreset = groups[0]?.variants.default ?? ANIMAL_MANIFEST.presets[0]!;
-  const [selected, setSelected] = React.useState<PresetItem>(defaultPreset);
+  // Selected group for the sticky preview
+  const [selectedGroup, setSelectedGroup] = React.useState<PresetGroup>(groups[0]!);
   const [nonce, setNonce] = React.useState(0);
 
-  const handleRowClick = (group: PresetGroup) => {
-    const intensity = getIntensityForGroup(group);
-    const preset = group.variants[intensity];
-    if (!preset) return;
+  // Resolve the active preset from group + global intensity
+  const getActivePreset = (group: PresetGroup): PresetItem => {
+    return group.variants[intensity] ?? group.variants.default!;
+  };
 
-    if (selected.phase === preset.phase && selected.name === preset.name) {
+  const selected = getActivePreset(selectedGroup);
+
+  const handleRowClick = (group: PresetGroup) => {
+    if (selectedGroup === group) {
       setNonce((n) => n + 1);
     } else {
-      setSelected(preset);
+      setSelectedGroup(group);
       setNonce((n) => n + 1);
     }
+  };
+
+  const handleIntensityChange = (newIntensity: Intensity) => {
+    setIntensity(newIntensity);
+    setNonce((n) => n + 1);
   };
 
   return (
@@ -153,18 +141,12 @@ export function PresetsExplorer() {
                       <th className="hidden px-4 py-2.5 font-medium sm:table-cell">
                         Defaults
                       </th>
-                      <th className="hidden px-4 py-2.5 font-medium md:table-cell">
-                        Intensity
-                      </th>
                     </tr>
                   </thead>
                   <tbody>
                     {phasePresets.map((group) => {
-                      const intensity = getIntensityForGroup(group);
-                      const activePreset = group.variants[intensity] ?? group.variants.default!;
-                      const isSelected =
-                        selected.phase === activePreset.phase &&
-                        selected.name === activePreset.name;
+                      const activePreset = getActivePreset(group);
+                      const isSelected = selectedGroup === group;
 
                       return (
                         <tr
@@ -206,13 +188,6 @@ export function PresetsExplorer() {
                           <td className="hidden px-4 py-2.5 text-xs text-black/40 dark:text-white/40 sm:table-cell">
                             {activePreset.defaults.durationMs}ms, {activePreset.defaults.easing}
                           </td>
-                          <td className="hidden px-4 py-2.5 md:table-cell">
-                            <IntensityToggle
-                              variants={group.variants}
-                              active={intensity}
-                              onChange={(i) => setIntensityForGroup(group, i)}
-                            />
-                          </td>
                         </tr>
                       );
                     })}
@@ -227,9 +202,16 @@ export function PresetsExplorer() {
       {/* Right: sticky preview */}
       <div className="hidden w-72 shrink-0 lg:block xl:w-80">
         <div className="sticky top-20">
-          <h2 className="text-xs font-semibold uppercase tracking-[0.16em] text-black/50 dark:text-white/60">
-            Preview
-          </h2>
+          <div className="flex items-center justify-between">
+            <h2 className="text-xs font-semibold uppercase tracking-[0.16em] text-black/50 dark:text-white/60">
+              Preview
+            </h2>
+            <IntensityToggle
+              variants={selectedGroup.variants}
+              active={intensity}
+              onChange={handleIntensityChange}
+            />
+          </div>
           <div className="mt-3">
             <PresetPreview
               key={`${selected.phase}:${selected.name}:${nonce}`}
@@ -238,33 +220,6 @@ export function PresetsExplorer() {
               params={selected.params}
             />
           </div>
-
-          {/* Params info */}
-          {Object.keys(selected.params).length > 0 && (
-            <div className="mt-4 rounded-xl border border-black/10 p-3 dark:border-white/10">
-              <p className="text-[10px] font-semibold uppercase tracking-[0.16em] text-black/40 dark:text-white/40">
-                Parameters
-              </p>
-              <div className="mt-2 flex flex-col gap-1">
-                {(
-                  Object.entries(selected.params) as Array<
-                    [string, { default: number; unit: string; description: string }]
-                  >
-                ).map(([key, val]) => (
-                  <div
-                    key={key}
-                    className="flex items-baseline justify-between gap-2 text-xs"
-                  >
-                    <code className="text-black/70 dark:text-white/70">{key}</code>
-                    <span className="text-black/40 dark:text-white/40">
-                      {val.default}
-                      {val.unit}
-                    </span>
-                  </div>
-                ))}
-              </div>
-            </div>
-          )}
 
           {/* Code example */}
           <div className="mt-4 rounded-xl border border-black/10 bg-black/[0.03] p-3 dark:border-white/10 dark:bg-white/[0.03]">
