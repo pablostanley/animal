@@ -25,6 +25,7 @@ const scaleParam = (def: number, description: string) => ({
   unit: "ratio" as const,
   description,
 });
+const degParam = (def: number, description: string) => ({ default: def, unit: "deg" as const, description });
 
 const ENTER_DEFAULTS: PresetManifestItem["defaults"] = {
   durationMs: 360,
@@ -106,6 +107,10 @@ const ZOOM_OUT_SIZES: Record<IntensitySuffix, number> = { sm: 1.05, lg: 1.3, xl:
 const BOUNCE_IN_SIZES: Record<IntensitySuffix, number> = { sm: 12, lg: 48, xl: 80, "2xl": 120 };
 const DROP_IN_SIZES: Record<IntensitySuffix, number> = { sm: 16, lg: 60, xl: 100, "2xl": 140 };
 const ELASTIC_SCALE_SIZES: Record<IntensitySuffix, number> = { sm: 0.92, lg: 0.7, xl: 0.5, "2xl": 0.3 };
+const ZOOM_IN_SIZES: Record<IntensitySuffix, number> = { sm: 1.05, lg: 1.3, xl: 1.5, "2xl": 1.75 };
+const BOUNCE_OUT_SIZES: Record<IntensitySuffix, number> = { sm: 12, lg: 48, xl: 80, "2xl": 120 };
+const DROP_OUT_SIZES: Record<IntensitySuffix, number> = { sm: 16, lg: 60, xl: 100, "2xl": 140 };
+const EXIT_ELASTIC_SIZES: Record<IntensitySuffix, number> = { sm: 0.92, lg: 0.7, xl: 0.5, "2xl": 0.3 };
 
 // --- Base presets ---
 
@@ -260,6 +265,16 @@ const enterDropIn: PresetSpec = {
   }),
 };
 
+const enterZoomIn: PresetSpec = {
+  phase: "enter",
+  name: "zoom-in",
+  description: "Scale down from large and fade in.",
+  affects: ["opacity", "transform"],
+  defaults: ENTER_DEFAULTS,
+  params: { scale: scaleParam(1.15, "Initial scale.") },
+  resolve: (p) => ({ fromDelta: { opacity: -1, scale: p.scale - 1 }, toDelta: {} }),
+};
+
 const exitSlideLeft: PresetSpec = {
   phase: "exit",
   name: "slide-left",
@@ -375,6 +390,57 @@ const exitZoomOut: PresetSpec = {
   }),
 };
 
+const exitBounceOut: PresetSpec = {
+  phase: "exit",
+  name: "bounce-out",
+  description: "Bounce out downward with elastic overshoot.",
+  affects: ["opacity", "transform"],
+  defaults: { durationMs: 600, delayMs: 0, easing: "linear" },
+  params: { y: pxParam(24, "Final Y offset.") },
+  resolve: (p) => ({
+    keyframes: [
+      { offset: 0, state: {} },
+      { offset: 0.25, state: { y: -4 } },
+      { offset: 0.5, state: { y: 6 } },
+      { offset: 1, state: { opacity: -1, y: p.y } },
+    ],
+  }),
+};
+
+const exitDropOut: PresetSpec = {
+  phase: "exit",
+  name: "drop-out",
+  description: "Drop out downward with bounce.",
+  affects: ["opacity", "transform"],
+  defaults: { durationMs: 600, delayMs: 0, easing: "linear" },
+  params: { y: pxParam(30, "Drop distance.") },
+  resolve: (p) => ({
+    keyframes: [
+      { offset: 0, state: {} },
+      { offset: 0.25, state: { y: -3 } },
+      { offset: 0.5, state: { y: 2 } },
+      { offset: 1, state: { opacity: -1, y: p.y } },
+    ],
+  }),
+};
+
+const exitElasticScale: PresetSpec = {
+  phase: "exit",
+  name: "elastic-scale",
+  description: "Scale out with elastic bounce.",
+  affects: ["opacity", "transform"],
+  defaults: { durationMs: 600, delayMs: 0, easing: "linear" },
+  params: { scale: scaleParam(0.85, "Final scale.") },
+  resolve: (p) => ({
+    keyframes: [
+      { offset: 0, state: {} },
+      { offset: 0.25, state: { scale: 0.04 } },
+      { offset: 0.45, state: { scale: -0.03 } },
+      { offset: 1, state: { opacity: -1, scale: p.scale - 1 } },
+    ],
+  }),
+};
+
 export const PRESETS: readonly PresetSpec[] = [
   // Enter
   {
@@ -412,6 +478,8 @@ export const PRESETS: readonly PresetSpec[] = [
   ...scaleVariants(enterElasticScale, ELASTIC_SCALE_SIZES),
   enterDropIn,
   ...positionVariants(enterDropIn, "y", DROP_IN_SIZES),
+  enterZoomIn,
+  ...scaleVariants(enterZoomIn, ZOOM_IN_SIZES),
   // Exit
   {
     phase: "exit",
@@ -444,6 +512,12 @@ export const PRESETS: readonly PresetSpec[] = [
   ...scaleVariants(exitScale, EXIT_SCALE_SIZES),
   exitZoomOut,
   ...scaleVariants(exitZoomOut, ZOOM_OUT_SIZES),
+  exitBounceOut,
+  ...positionVariants(exitBounceOut, "y", BOUNCE_OUT_SIZES),
+  exitDropOut,
+  ...positionVariants(exitDropOut, "y", DROP_OUT_SIZES),
+  exitElasticScale,
+  ...scaleVariants(exitElasticScale, EXIT_ELASTIC_SIZES),
   // Hover
   {
     phase: "hover",
@@ -472,6 +546,15 @@ export const PRESETS: readonly PresetSpec[] = [
     params: { scale: scaleParam(0.95, "Hover scale.") },
     resolve: (p) => ({ toDelta: { scale: p.scale - 1 } }),
   },
+  {
+    phase: "hover",
+    name: "tilt",
+    description: "Tilt slightly on hover.",
+    affects: ["transform"],
+    defaults: HOVER_DEFAULTS,
+    params: { rotate: degParam(3, "Tilt angle in degrees.") },
+    resolve: (p) => ({ fromDelta: {}, toDelta: { rotate: p.rotate } }),
+  },
   // Press
   {
     phase: "press",
@@ -491,6 +574,15 @@ export const PRESETS: readonly PresetSpec[] = [
     params: { y: pxParam(3, "Push distance (positive pushes down).") },
     resolve: (p) => ({ toDelta: { y: p.y } }),
   },
+  {
+    phase: "press",
+    name: "squish",
+    description: "Squish vertically on press.",
+    affects: ["transform"],
+    defaults: PRESS_DEFAULTS,
+    params: { scale: scaleParam(0.92, "Vertical squish scale.") },
+    resolve: (p) => ({ fromDelta: {}, toDelta: { scale: p.scale - 1 } }),
+  },
   // Focus
   {
     phase: "focus",
@@ -500,6 +592,15 @@ export const PRESETS: readonly PresetSpec[] = [
     defaults: FOCUS_DEFAULTS,
     params: { y: pxParam(3, "Lift distance (positive lifts up).") },
     resolve: (p) => ({ fromDelta: {}, toDelta: { y: -p.y } }),
+  },
+  {
+    phase: "focus",
+    name: "grow",
+    description: "Scale up slightly on focus.",
+    affects: ["transform"],
+    defaults: FOCUS_DEFAULTS,
+    params: { scale: scaleParam(1.05, "Focus scale.") },
+    resolve: (p) => ({ fromDelta: {}, toDelta: { scale: p.scale - 1 } }),
   },
 ] as const;
 
