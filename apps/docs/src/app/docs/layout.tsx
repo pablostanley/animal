@@ -1,16 +1,27 @@
-import { Sidebar } from "@/components/Sidebar";
+import { DocsLayout } from "fumadocs-ui/layouts/docs";
+import type { ReactNode } from "react";
+import { source } from "@/lib/source";
 
-export default function DocsLayout({
-  children,
-}: Readonly<{
-  children: React.ReactNode;
-}>) {
+export default function Layout({ children }: { children: ReactNode }) {
   return (
-    <div className="mx-auto flex max-w-7xl gap-0 px-4">
-      <Sidebar />
-      <div className="min-w-0 flex-1 py-10 lg:pl-8">
-        {children}
-      </div>
-    </div>
+    <DocsLayout
+      tree={source.pageTree}
+      nav={{
+        title: "Animal",
+      }}
+      links={[
+        {
+          text: "Presets",
+          url: "/docs/presets",
+        },
+        {
+          text: "Playground",
+          url: "/playground",
+        },
+      ]}
+      githubUrl="https://github.com/pablostanley/animal"
+    >
+      {children}
+    </DocsLayout>
   );
 }

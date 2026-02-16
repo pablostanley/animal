@@ -32,6 +32,18 @@ function DemoCard({
   );
 }
 
+function ReplayButton({ onClick }: { onClick: () => void }) {
+  return (
+    <button
+      type="button"
+      onClick={onClick}
+      className="h-7 rounded-md border border-black/10 bg-black/5 px-3 text-[11px] font-medium text-black/60 hover:bg-black/10 dark:border-white/10 dark:bg-white/5 dark:text-white/60 dark:hover:bg-white/10"
+    >
+      Replay
+    </button>
+  );
+}
+
 function PresenceDemo() {
   const [open, setOpen] = React.useState(true);
 
@@ -81,15 +93,7 @@ function BounceDemo() {
     <DemoCard
       label="Keyframe"
       token='an="enter:bounce-in"'
-      action={
-        <button
-          type="button"
-          onClick={() => setNonce((n) => n + 1)}
-          className="h-7 rounded-md border border-black/10 bg-black/5 px-3 text-[11px] font-medium text-black/60 hover:bg-black/10 dark:border-white/10 dark:bg-white/5 dark:text-white/60 dark:hover:bg-white/10"
-        >
-          Replay
-        </button>
-      }
+      action={<ReplayButton onClick={() => setNonce((n) => n + 1)} />}
     >
       <A.div
         key={nonce}
@@ -107,15 +111,7 @@ function StaggerDemo() {
     <DemoCard
       label="Stagger"
       token="<Stagger stagger={60}>"
-      action={
-        <button
-          type="button"
-          onClick={() => setNonce((n) => n + 1)}
-          className="h-7 rounded-md border border-black/10 bg-black/5 px-3 text-[11px] font-medium text-black/60 hover:bg-black/10 dark:border-white/10 dark:bg-white/5 dark:text-white/60 dark:hover:bg-white/10"
-        >
-          Replay
-        </button>
-      }
+      action={<ReplayButton onClick={() => setNonce((n) => n + 1)} />}
     >
       <Stagger stagger={60} key={nonce}>
         <div className="flex gap-2">
@@ -128,6 +124,78 @@ function StaggerDemo() {
           ))}
         </div>
       </Stagger>
+    </DemoCard>
+  );
+}
+
+function SlideDemo() {
+  const [nonce, setNonce] = React.useState(0);
+
+  return (
+    <DemoCard
+      label="Slide"
+      token='an="enter:slide-left"'
+      action={<ReplayButton onClick={() => setNonce((n) => n + 1)} />}
+    >
+      <A.div
+        key={nonce}
+        an="enter:slide-left x-40 ease-spring-snappy"
+        className="h-16 w-16 rounded-2xl bg-gradient-to-br from-black to-black/80 shadow-lg dark:from-white dark:to-white/80"
+      />
+    </DemoCard>
+  );
+}
+
+function PopDemo() {
+  const [nonce, setNonce] = React.useState(0);
+
+  return (
+    <DemoCard
+      label="Pop"
+      token='an="enter:pop"'
+      action={<ReplayButton onClick={() => setNonce((n) => n + 1)} />}
+    >
+      <A.div
+        key={nonce}
+        an="enter:pop ease-spring-bouncy"
+        className="h-16 w-16 rounded-2xl bg-gradient-to-br from-black to-black/80 shadow-lg dark:from-white dark:to-white/80"
+      />
+    </DemoCard>
+  );
+}
+
+function DropInDemo() {
+  const [nonce, setNonce] = React.useState(0);
+
+  return (
+    <DemoCard
+      label="Drop In"
+      token='an="enter:drop-in"'
+      action={<ReplayButton onClick={() => setNonce((n) => n + 1)} />}
+    >
+      <A.div
+        key={nonce}
+        an="enter:drop-in y-40"
+        className="h-16 w-16 rounded-2xl bg-gradient-to-br from-black to-black/80 shadow-lg dark:from-white dark:to-white/80"
+      />
+    </DemoCard>
+  );
+}
+
+function ElasticDemo() {
+  const [nonce, setNonce] = React.useState(0);
+
+  return (
+    <DemoCard
+      label="Elastic"
+      token='an="enter:elastic-scale"'
+      action={<ReplayButton onClick={() => setNonce((n) => n + 1)} />}
+    >
+      <A.div
+        key={nonce}
+        an="enter:elastic-scale"
+        className="h-16 w-16 rounded-2xl bg-gradient-to-br from-black to-black/80 shadow-lg dark:from-white dark:to-white/80"
+      />
     </DemoCard>
   );
 }
@@ -146,6 +214,10 @@ export function Demo() {
         <InteractionDemo />
         <BounceDemo />
         <StaggerDemo />
+        <SlideDemo />
+        <PopDemo />
+        <DropInDemo />
+        <ElasticDemo />
       </div>
     </section>
   );

@@ -434,10 +434,10 @@ function SpringPlayground() {
 }
 
 /* -------------------------------------------------------------------------- */
-/*  Page                                                                      */
+/*  Exported Playground Component                                             */
 /* -------------------------------------------------------------------------- */
 
-export default function EasingsPage() {
+export function EasingsPlayground() {
   const cssEasingNames = Object.keys(CSS_EASINGS);
   const springPresetEntries = Object.entries(SPRING_PRESETS) as Array<
     [string, { stiffness: number; damping: number; mass: number }]
@@ -445,19 +445,6 @@ export default function EasingsPage() {
 
   return (
     <>
-      <div className="mb-8 max-w-2xl">
-        <h1 className="text-2xl font-semibold tracking-tight text-black dark:text-white">
-          Easings & Springs
-        </h1>
-        <p className="mt-2 text-sm leading-6 text-black/60 dark:text-white/60">
-          Built-in easing curves and spring presets. Use easing tokens in the{" "}
-          <code className="rounded bg-black/5 px-1.5 py-0.5 dark:bg-white/10">
-            an
-          </code>{" "}
-          prop to control animation timing.
-        </p>
-      </div>
-
       {/* ------------------------------------------------------------------ */}
       {/*  CSS Easings                                                       */}
       {/* ------------------------------------------------------------------ */}

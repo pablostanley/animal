@@ -1,0 +1,19 @@
+{
+  "title": "Documentation",
+  "pages": [
+    "---Getting Started---",
+    "index",
+    "getting-started",
+    "---Core Concepts---",
+    "tokens",
+    "easings",
+    "---Components---",
+    "components",
+    "---Hooks---",
+    "hooks",
+    "---Reference---",
+    "api",
+    "presets",
+    "manifest"
+  ]
+}

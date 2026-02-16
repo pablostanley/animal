@@ -1,0 +1,87 @@
+---
+title: Components
+description: "Animal exports three React components: A, Presence, and Stagger."
+---
+
+import { PresenceDemo } from "@/components/docs/PresenceDemo";
+import { StaggerDemo } from "@/components/docs/StaggerDemo";
+import { FadeUpDemo } from "@/components/docs/FadeUpDemo";
+
+## A.* (Animatable Elements)
+
+`A` is a Proxy object. Access any HTML tag as a property (`A.div`, `A.button`, `A.span`, `A.li`, etc.) to get an animated version of that element. The only extra prop is `an`, which accepts the token string.
+
+| Prop | Type | Description |
+| --- | --- | --- |
+| `an` | `string` | Space-separated token string defining the animation. |
+| `...rest` | `HTMLAttributes` | All standard HTML attributes for the underlying element. |
+
+```tsx
+import { A } from "@vercel/animal/react";
+
+<A.div an="enter:fade-up duration-240 ease-out">
+  Animated div
+</A.div>
+
+<A.button an="hover:lift press:compress" type="button">
+  Animated button
+</A.button>
+
+<A.span an="enter:scale ease-spring-bouncy">
+  Animated span
+</A.span>
+```
+
+<FadeUpDemo />
+
+## Presence
+
+`Presence` keeps children mounted in the DOM until exit animations finish. Set `present` to `false` to trigger the exit phase, then unmounts after the animation completes.
+
+| Prop | Type | Description |
+| --- | --- | --- |
+| `present` | `boolean` | Whether the children should be visible. When false, exit animations play before unmount. |
+| `children` | `ReactNode` | Child elements (typically A.* components with exit tokens). |
+
+```tsx
+import { A, Presence } from "@vercel/animal/react";
+
+export function Modal({ open }: { open: boolean }) {
+  return (
+    <Presence present={open}>
+      <A.div an="enter:fade-up exit:fade-down duration-240 ease-in-out">
+        Modal content
+      </A.div>
+    </Presence>
+  );
+}
+```
+
+<PresenceDemo />
+
+## Stagger
+
+Wrap sibling `A.*` elements in `Stagger` to automatically add incremental delays to each child's enter animation.
+
+| Prop | Type | Description |
+| --- | --- | --- |
+| `stagger` | `number` | Delay in ms between each child's animation start. |
+| `children` | `ReactNode` | Child elements (typically A.* components). |
+
+```tsx
+import { A, Stagger } from "@vercel/animal/react";
+
+export function List({ items }: { items: string[] }) {
+  return (
+    <Stagger stagger={80}>
+      {items.map((item, i) => (
+        <A.div key={i} an="enter:fade-up">
+          {item}
+        </A.div>
+      ))}
+    </Stagger>
+  );
+}
+```
+
+<StaggerDemo />

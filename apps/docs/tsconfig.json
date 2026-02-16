@@ -19,7 +19,9 @@
       }
     ],
     "paths": {
-      "@/*": ["./src/*"]
+      "@/*": ["./src/*"],
+      "fumadocs-mdx:collections": ["./.source/server"],
+      "fumadocs-mdx:collections/*": ["./.source/*"]
     }
   },
   "include": [
@@ -28,7 +30,9 @@
     "**/*.tsx",
     ".next/types/**/*.ts",
     ".next/dev/types/**/*.ts",
-    "**/*.mts"
+    "**/*.mts",
+    ".source/**/*.ts",
+    "**/*.mdx"
   ],
   "exclude": ["node_modules"]
 }
