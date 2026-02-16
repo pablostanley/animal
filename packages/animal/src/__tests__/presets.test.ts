@@ -70,9 +70,9 @@ describe("presets", () => {
     expect(result!.keyframes![result!.keyframes!.length - 1]!.state.opacity).toBe(-1);
   });
 
-  it("has 128 total presets in the manifest", () => {
+  it("has 151 total presets in the manifest", () => {
     const items = getPresetManifestItems();
-    expect(items.length).toBe(128);
+    expect(items.length).toBe(151);
   });
 
   // --- Intensity variant tests ---
@@ -167,5 +167,81 @@ describe("presets", () => {
     const base = resolvePreset("enter", "fade-up", {});
     const sm = resolvePreset("enter", "fade-up-sm", {});
     expect(sm!.defaults.durationMs).toBe(base!.defaults.durationMs);
+  });
+
+  // --- New preset tests ---
+
+  it("resolves enter:zoom-in preset", () => {
+    const preset = resolvePreset("enter", "zoom-in", {});
+    expect(preset).not.toBeNull();
+    expect(preset?.fromDelta?.opacity).toBe(-1);
+    expect(preset?.fromDelta?.scale).toBe(1.15 - 1);
+  });
+
+  it("resolves enter:zoom-in-lg with correct scale", () => {
+    const preset = resolvePreset("enter", "zoom-in-lg", {});
+    expect(preset).not.toBeNull();
+    expect(preset?.fromDelta?.scale).toBe(1.3 - 1);
+  });
+
+  it("resolves exit:bounce-out as keyframe preset", () => {
+    const result = resolvePreset("exit", "bounce-out", {});
+    expect(result).not.toBeNull();
+    expect(result?.keyframes).toBeDefined();
+    expect(result!.keyframes!.length).toBe(4);
+    expect(result!.keyframes![0]!.offset).toBe(0);
+    expect(result!.keyframes![3]!.state.opacity).toBe(-1);
+  });
+
+  it("resolves exit:drop-out as keyframe preset", () => {
+    const result = resolvePreset("exit", "drop-out", {});
+    expect(result).not.toBeNull();
+    expect(result?.keyframes).toBeDefined();
+    expect(result!.keyframes!.length).toBe(4);
+    expect(result!.keyframes![3]!.state.opacity).toBe(-1);
+  });
+
+  it("resolves exit:elastic-scale as keyframe preset", () => {
+    const result = resolvePreset("exit", "elastic-scale", {});
+    expect(result).not.toBeNull();
+    expect(result?.keyframes).toBeDefined();
+    expect(result!.keyframes!.length).toBe(4);
+    expect(result!.keyframes![3]!.state.opacity).toBe(-1);
+    expect(result!.keyframes![3]!.state.scale).toBe(0.85 - 1);
+  });
+
+  it("resolves hover:tilt preset", () => {
+    const preset = resolvePreset("hover", "tilt", {});
+    expect(preset).not.toBeNull();
+    expect(preset?.toDelta?.rotate).toBe(3);
+  });
+
+  it("resolves press:squish preset", () => {
+    const preset = resolvePreset("press", "squish", {});
+    expect(preset).not.toBeNull();
+    expect(preset?.toDelta?.scale).toBe(0.92 - 1);
+  });
+
+  it("resolves focus:grow preset", () => {
+    const preset = resolvePreset("focus", "grow", {});
+    expect(preset).not.toBeNull();
+    expect(preset?.toDelta?.scale).toBe(1.05 - 1);
+  });
+
+  it("recognises new presets as known", () => {
+    expect(isKnownPreset("enter", "zoom-in")).toBe(true);
+    expect(isKnownPreset("exit", "bounce-out")).toBe(true);
+    expect(isKnownPreset("exit", "drop-out")).toBe(true);
+    expect(isKnownPreset("exit", "elastic-scale")).toBe(true);
+    expect(isKnownPreset("hover", "tilt")).toBe(true);
+    expect(isKnownPreset("press", "squish")).toBe(true);
+    expect(isKnownPreset("focus", "grow")).toBe(true);
+  });
+
+  it("recognises intensity variants for new presets", () => {
+    expect(isKnownPreset("enter", "zoom-in-xl")).toBe(true);
+    expect(isKnownPreset("exit", "bounce-out-lg")).toBe(true);
+    expect(isKnownPreset("exit", "drop-out-2xl")).toBe(true);
+    expect(isKnownPreset("exit", "elastic-scale-sm")).toBe(true);
   });
 });
