@@ -10,6 +10,7 @@ type Props = {
   phase: string;
   name: string;
   params?: Record<string, ParamMeta>;
+  children?: React.ReactNode;
 };
 
 function sliderConfig(key: string): { min: number; max: number; step: number } {
@@ -24,7 +25,7 @@ function formatValue(val: number, unit: string): string {
   return `${val}${unit}`;
 }
 
-export function PresetPreview({ phase, name, params }: Props) {
+export function PresetPreview({ phase, name, params, children }: Props) {
   const [show, setShow] = React.useState(true);
   const [nonce, setNonce] = React.useState(0);
 
@@ -158,6 +159,9 @@ export function PresetPreview({ phase, name, params }: Props) {
           />
         )}
       </div>
+
+      {/* Slot for external controls (e.g. intensity toggle) */}
+      {children}
 
       {/* Parameter sliders */}
       {hasParams && (

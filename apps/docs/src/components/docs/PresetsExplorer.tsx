@@ -211,16 +211,13 @@ export function PresetsExplorer() {
               phase={selected.phase}
               name={selected.name}
               params={selected.params}
-            />
-          </div>
-
-          {/* Intensity toggle */}
-          <div className="mt-3">
-            <IntensityToggle
-              variants={selectedGroup.variants}
-              active={intensity}
-              onChange={handleIntensityChange}
-            />
+            >
+              <IntensityToggle
+                variants={selectedGroup.variants}
+                active={intensity}
+                onChange={handleIntensityChange}
+              />
+            </PresetPreview>
           </div>
 
           {/* Code example */}
