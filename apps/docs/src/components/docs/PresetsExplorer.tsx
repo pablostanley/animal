@@ -202,22 +202,24 @@ export function PresetsExplorer() {
       {/* Right: sticky preview */}
       <div className="hidden w-72 shrink-0 lg:block xl:w-80">
         <div className="sticky top-20">
-          <div className="flex items-center justify-between">
-            <h2 className="text-xs font-semibold uppercase tracking-[0.16em] text-black/50 dark:text-white/60">
-              Preview
-            </h2>
-            <IntensityToggle
-              variants={selectedGroup.variants}
-              active={intensity}
-              onChange={handleIntensityChange}
-            />
-          </div>
+          <h2 className="text-xs font-semibold uppercase tracking-[0.16em] text-black/50 dark:text-white/60">
+            Preview
+          </h2>
           <div className="mt-3">
             <PresetPreview
               key={`${selected.phase}:${selected.name}:${nonce}`}
               phase={selected.phase}
               name={selected.name}
               params={selected.params}
+            />
+          </div>
+
+          {/* Intensity toggle */}
+          <div className="mt-3">
+            <IntensityToggle
+              variants={selectedGroup.variants}
+              active={intensity}
+              onChange={handleIntensityChange}
             />
           </div>
 
