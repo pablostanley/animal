@@ -53,9 +53,35 @@ export function PresetPreview({ phase, name, params, children }: Props) {
   }, [params]);
 
   const isEnterExit = phase === "enter" || phase === "exit";
+  const isExit = phase === "exit";
+
+  // Timer ref for exit replay sequencing
+  const exitTimerRef = React.useRef<ReturnType<typeof setTimeout>>(undefined);
+
+  // For exit presets, auto-trigger the exit shortly after mount
+  React.useEffect(() => {
+    if (isExit) {
+      exitTimerRef.current = setTimeout(() => {
+        setShow(false);
+      }, 100);
+      return () => clearTimeout(exitTimerRef.current);
+    }
+  }, [isExit]);
 
   const replay = React.useCallback(() => {
-    if (isEnterExit) {
+    if (!isEnterExit) return;
+    clearTimeout(exitTimerRef.current);
+
+    if (isExit) {
+      // Step 1: remount element (appears instantly, no enter animation)
+      setShow(true);
+      setNonce((n) => n + 1);
+      // Step 2: after React commits the mount, trigger the exit
+      exitTimerRef.current = setTimeout(() => {
+        setShow(false);
+      }, 100);
+    } else {
+      // For enter presets: hide then re-show
       setShow(false);
       requestAnimationFrame(() => {
         requestAnimationFrame(() => {
@@ -64,7 +90,7 @@ export function PresetPreview({ phase, name, params, children }: Props) {
         });
       });
     }
-  }, [isEnterExit]);
+  }, [isEnterExit, isExit]);
 
   // Build the an="" token from slider values
   const baseToken = `${phase}:${name}`;
@@ -73,21 +99,16 @@ export function PresetPreview({ phase, name, params, children }: Props) {
     .map(([key, val]) => `${key}-${val}`)
     .join(" ");
 
-  // For enter/exit, we need to scope param overrides
-  const enterToken = phase === "enter" ? name : "fade";
-  const exitToken = phase === "exit" ? name : "fade";
-
   let anValue: string;
   if (isEnterExit) {
-    const enterBase = `enter:${enterToken}`;
-    const exitBase = `exit:${exitToken}`;
-    if (paramTokens) {
-      // Scope param overrides to the active phase
-      anValue = phase === "enter"
-        ? `${enterBase} ${paramTokens} ${exitBase}`
-        : `${enterBase} ${exitBase} ${paramTokens}`;
+    if (isExit) {
+      // Exit preview: only the exit animation, no enter (element appears instantly)
+      const exitBase = `exit:${name}`;
+      anValue = paramTokens ? `${exitBase} ${paramTokens}` : exitBase;
     } else {
-      anValue = `${enterBase} ${exitBase}`;
+      // Enter preview: enter animation + simple fade exit
+      const enterBase = `enter:${name}`;
+      anValue = paramTokens ? `${enterBase} ${paramTokens} exit:fade` : `${enterBase} exit:fade`;
     }
   } else {
     // Interaction presets: scope params to the phase
@@ -114,18 +135,27 @@ export function PresetPreview({ phase, name, params, children }: Props) {
         const captured = sliderNonceRef.current;
         setTimeout(() => {
           if (sliderNonceRef.current === captured) {
-            setShow(false);
-            requestAnimationFrame(() => {
+            clearTimeout(exitTimerRef.current);
+            if (isExit) {
+              setShow(true);
+              setNonce((n) => n + 1);
+              exitTimerRef.current = setTimeout(() => {
+                setShow(false);
+              }, 100);
+            } else {
+              setShow(false);
               requestAnimationFrame(() => {
-                setShow(true);
-                setNonce((n) => n + 1);
+                requestAnimationFrame(() => {
+                  setShow(true);
+                  setNonce((n) => n + 1);
+                });
               });
-            });
+            }
           }
         }, 200);
       }
     },
-    [isEnterExit]
+    [isEnterExit, isExit]
   );
 
   const hasParams = params && Object.keys(params).length > 0;
