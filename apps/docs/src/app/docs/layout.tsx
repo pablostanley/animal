@@ -1,25 +1,17 @@
 import { DocsLayout } from "fumadocs-ui/layouts/docs";
 import type { ReactNode } from "react";
 import { source } from "@/lib/source";
+import { DocsNav } from "@/components/DocsNav";
 
 export default function Layout({ children }: { children: ReactNode }) {
   return (
     <DocsLayout
       tree={source.pageTree}
       nav={{
-        title: "Animal",
+        enabled: true,
+        component: <DocsNav />,
       }}
-      links={[
-        {
-          text: "Presets",
-          url: "/docs/presets",
-        },
-        {
-          text: "Playground",
-          url: "/playground",
-        },
-      ]}
-      githubUrl="https://github.com/pablostanley/animal"
+      themeSwitch={{ enabled: false }}
     >
       {children}
     </DocsLayout>
