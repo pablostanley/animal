@@ -2,6 +2,7 @@
 
 import * as React from "react";
 import { A, Presence, Stagger } from "@vercel/animal/react";
+import { RefreshCw } from "@geist-ui/icons";
 import { CopyButton } from "./CopyButton";
 
 function DemoCard({
@@ -16,14 +17,16 @@ function DemoCard({
   children: React.ReactNode;
 }) {
   return (
-    <div className="flex flex-col gap-3 rounded-2xl border border-black/10 bg-black/[0.03] p-5 dark:border-white/10 dark:bg-white/[0.03]">
+    <div className="flex flex-col gap-4 rounded-xl border border-black/10 p-5 dark:border-white/10">
       <div className="flex items-center justify-between">
-        <p className="text-xs font-medium text-black/70 dark:text-white/70">{label}</p>
+        <p className="text-xs font-medium uppercase tracking-[0.12em] text-black/55 dark:text-white/55">
+          {label}
+        </p>
         {action}
       </div>
       <div className="flex min-h-[120px] items-center justify-center">{children}</div>
-      <div className="flex items-center gap-1">
-        <code className="rounded-lg bg-black/5 px-2.5 py-1.5 font-mono text-[11px] text-black/50 dark:bg-white/10 dark:text-white/50">
+      <div className="flex items-center gap-2">
+        <code className="rounded-md border border-black/10 px-2.5 py-1.5 font-mono text-[11px] text-black/55 dark:border-white/10 dark:text-white/55">
           {token}
         </code>
         <CopyButton text={token} />
@@ -37,8 +40,9 @@ function ReplayButton({ onClick }: { onClick: () => void }) {
     <button
       type="button"
       onClick={onClick}
-      className="h-7 rounded-md border border-black/10 bg-black/5 px-3 text-[11px] font-medium text-black/60 hover:bg-black/10 dark:border-white/10 dark:bg-white/5 dark:text-white/60 dark:hover:bg-white/10"
+      className="inline-flex h-7 items-center gap-1.5 rounded-md border border-black/10 px-3 text-[11px] font-medium text-black/60 hover:bg-black/5 dark:border-white/10 dark:text-white/60 dark:hover:bg-white/5"
     >
+      <RefreshCw size={12} aria-hidden="true" />
       Replay
     </button>
   );
@@ -55,7 +59,7 @@ function PresenceDemo() {
         <button
           type="button"
           onClick={() => setOpen((v) => !v)}
-          className="h-7 rounded-md border border-black/10 bg-black/5 px-3 text-[11px] font-medium text-black/60 hover:bg-black/10 dark:border-white/10 dark:bg-white/5 dark:text-white/60 dark:hover:bg-white/10"
+          className="h-7 rounded-md border border-black/10 px-3 text-[11px] font-medium text-black/60 hover:bg-black/5 dark:border-white/10 dark:text-white/60 dark:hover:bg-white/5"
         >
           {open ? "Exit" : "Enter"}
         </button>
@@ -65,7 +69,7 @@ function PresenceDemo() {
         <Presence present={open}>
           <A.div
             an="enter:fade-up exit:fade-down duration-400 ease-spring-snappy y-28"
-            className="absolute inset-0 rounded-2xl bg-gradient-to-br from-black to-black/80 shadow-lg dark:from-white dark:to-white/80"
+            className="absolute inset-0 rounded-xl border border-black/10 bg-black/90 dark:border-white/20 dark:bg-white/90"
           />
         </Presence>
       </div>
@@ -78,7 +82,7 @@ function InteractionDemo() {
     <DemoCard label="Hover + Press" token='an="hover:grow press:compress"'>
       <A.button
         an="hover:grow press:compress duration-200 ease-out hover:scale-1.12 press:scale-0.88"
-        className="h-16 w-16 rounded-2xl bg-gradient-to-br from-black to-black/80 shadow-lg focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-black/30 dark:from-white dark:to-white/80 dark:focus-visible:ring-white/30"
+        className="h-16 w-16 rounded-xl border border-black/10 bg-black/90 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-black/30 dark:border-white/20 dark:bg-white/90 dark:focus-visible:ring-white/30"
         type="button"
         aria-label="Interactive demo"
       />
@@ -98,7 +102,7 @@ function BounceDemo() {
       <A.div
         key={nonce}
         an="enter:bounce-in y-32"
-        className="h-16 w-16 rounded-2xl bg-gradient-to-br from-black to-black/80 shadow-lg dark:from-white dark:to-white/80"
+        className="h-16 w-16 rounded-xl border border-black/10 bg-black/90 dark:border-white/20 dark:bg-white/90"
       />
     </DemoCard>
   );
@@ -119,7 +123,7 @@ function StaggerDemo() {
             <A.div
               key={i}
               an="enter:fade-up ease-spring-snappy y-24"
-              className="h-10 w-10 rounded-xl bg-gradient-to-br from-black to-black/80 shadow-md dark:from-white dark:to-white/80"
+              className="h-10 w-10 rounded-lg border border-black/10 bg-black/90 dark:border-white/20 dark:bg-white/90"
             />
           ))}
         </div>
@@ -140,7 +144,7 @@ function SlideDemo() {
       <A.div
         key={nonce}
         an="enter:slide-left x-40 ease-spring-snappy"
-        className="h-16 w-16 rounded-2xl bg-gradient-to-br from-black to-black/80 shadow-lg dark:from-white dark:to-white/80"
+        className="h-16 w-16 rounded-xl border border-black/10 bg-black/90 dark:border-white/20 dark:bg-white/90"
       />
     </DemoCard>
   );
@@ -158,7 +162,7 @@ function PopDemo() {
       <A.div
         key={nonce}
         an="enter:pop ease-spring-bouncy"
-        className="h-16 w-16 rounded-2xl bg-gradient-to-br from-black to-black/80 shadow-lg dark:from-white dark:to-white/80"
+        className="h-16 w-16 rounded-xl border border-black/10 bg-black/90 dark:border-white/20 dark:bg-white/90"
       />
     </DemoCard>
   );
@@ -176,7 +180,7 @@ function DropInDemo() {
       <A.div
         key={nonce}
         an="enter:drop-in y-40"
-        className="h-16 w-16 rounded-2xl bg-gradient-to-br from-black to-black/80 shadow-lg dark:from-white dark:to-white/80"
+        className="h-16 w-16 rounded-xl border border-black/10 bg-black/90 dark:border-white/20 dark:bg-white/90"
       />
     </DemoCard>
   );
@@ -194,7 +198,7 @@ function ElasticDemo() {
       <A.div
         key={nonce}
         an="enter:elastic-scale"
-        className="h-16 w-16 rounded-2xl bg-gradient-to-br from-black to-black/80 shadow-lg dark:from-white dark:to-white/80"
+        className="h-16 w-16 rounded-xl border border-black/10 bg-black/90 dark:border-white/20 dark:bg-white/90"
       />
     </DemoCard>
   );
@@ -202,11 +206,13 @@ function ElasticDemo() {
 
 export function Demo() {
   return (
-    <section className="flex flex-col gap-4">
+    <section className="flex flex-col gap-8">
       <div>
-        <p className="text-sm font-medium text-black/80 dark:text-white/80">In action</p>
-        <p className="text-sm text-black/60 dark:text-white/60">
-          Hover, click, and toggle. Every animation below is a single prop.
+        <p className="text-xs font-medium uppercase tracking-[0.16em] text-black/45 dark:text-white/45">
+          In action
+        </p>
+        <p className="mt-4 text-sm leading-6 text-black/60 dark:text-white/60">
+          Hover, click, and toggle. Every behavior below is still one token string.
         </p>
       </div>
       <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">

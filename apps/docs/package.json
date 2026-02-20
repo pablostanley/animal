@@ -9,6 +9,7 @@
     "lint": "eslint"
   },
   "dependencies": {
+    "@geist-ui/icons": "^1.0.2",
     "@types/mdx": "^2.0.13",
     "@vercel/animal": "workspace:*",
     "fumadocs-core": "^16.6.1",
